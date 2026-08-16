@@ -1,0 +1,17 @@
+{
+  "name": "football-club-manager-2026",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "FCM 26 — a browser football management career mode game (match simulation only)",
+  "scripts": {
+    "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
+    "smoke": "node tools/smoke.mjs",
+    "build:data": "node tools/build_import.mjs"
+  },
+  "dependencies": {
+    "jsdom": "^29.1.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

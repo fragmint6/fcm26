@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Football Club Manager 2026</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div id="brand"><span class="logo">FCM</span><span class="logo-year">26</span></div>
+    <div id="topbar-mid">
+      <div id="top-club"></div>
+      <div id="top-next"></div>
+    </div>
+    <div id="topbar-right">
+      <div id="top-funds"></div>
+      <div id="top-date"></div>
+      <button id="btn-advance" class="btn btn-primary btn-advance">▶ ADVANCE</button>
+    </div>
+  </header>
+  <nav id="nav">
+    <button class="nav-btn" data-screen="home"><span class="nav-ic">🏠</span>Home</button>
+    <button class="nav-btn" data-screen="squad"><span class="nav-ic">👥</span>Squad</button>
+    <button class="nav-btn" data-screen="transfers"><span class="nav-ic">💼</span>Transfers</button>
+    <button class="nav-btn" data-screen="academy"><span class="nav-ic">🎓</span>Academy</button>
+    <button class="nav-btn" data-screen="season"><span class="nav-ic">📅</span>Season</button>
+    <button class="nav-btn" data-screen="club"><span class="nav-ic">🏛️</span>Club</button>
+    <button class="nav-btn" data-screen="news"><span class="nav-ic">📰</span>News<span id="news-badge" class="badge hide"></span></button>
+    <button class="nav-btn" data-screen="intl" id="nav-intl" style="display:none"><span class="nav-ic">🌍</span>International</button>
+    <button class="nav-btn" data-screen="settings"><span class="nav-ic">⚙️</span>Settings</button>
+  </nav>
+  <main id="content"></main>
+</div>
+<div id="adv-overlay" class="hide">
+  <div class="adv-box">
+    <div class="spinner"></div>
+    <div id="adv-date"></div>
+    <div class="adv-hint">Simulating the football world…</div>
+  </div>
+</div>
+<div id="modal-root"></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
