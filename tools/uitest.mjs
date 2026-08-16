@@ -39,7 +39,7 @@ win.addEventListener('error', e => pageErrors.push('window error: ' + e.message)
 
 const { newGame, saveGame } = await import('../js/state.js');
 const screensMod = await import('../js/ui/screens.js');
-const { setG, getG, setRouterFn, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, showPlayerModal, showResultModal, advanceFromUI } = screensMod;
+const { setG, getG, setRouterFn, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, showPlayerModal, showResultModal, advanceFromUI, userClub } = screensMod;
 const { showMatchday } = await import('../js/ui/matchscreen.js');
 const { quickSim, matchSeed } = await import('../js/engine/match.js');
 const { applyMatchResult, advanceUntil } = await import('../js/engine/advance.js');
