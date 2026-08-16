@@ -211,7 +211,7 @@ function weeklyFinance(G) {
     let wages = 0;
     for (const id of c.squad) {
       const p = world.players.get(id);
-      if (p) wages += p.ctr.w / 7;
+      if (p) wages += (p.ctr.w * 1000) / 7; // ctr.w is in €k/week → raw euros
     }
     c.bal += inc - wages;
     if (c.id === G.user.clubId) c.pnl = (c.pnl || 0) + inc - wages;

@@ -8,6 +8,7 @@ import { totalWages } from './engine/market.js';
 import { hashStr, RNG, clamp, fmtDate, fmtMoney } from './util.js';
 import { applyImportedPlayer } from './engine/import.js';
 import { prepareWorldWithBundle, trimSquads } from './engine/worldextend.js';
+import { applyUserTact } from './engine/match.js';
 
 // ---- EAFC database bundle (js/data/import_bundle.js, built from uploads/*.csv) ----
 let bundlePromise = null;
@@ -63,6 +64,7 @@ export async function newGame(opts) {
   G.importCount = res.applied;
   G.importClubsCreated = res.created || 0;
   buildSeason(G, START_YEAR);
+  applyUserTact(G);
   genObjectives(G, club);
   news(G, 'Board', `Welcome to ${club.name}, ${G.manager.name}. The board expect ${club.objectives[0].label.toLowerCase()}.`, '👋');
   if (res.applied) news(G, 'Data', `${res.applied} players loaded with real database stats & photos${res.created ? `, ${res.created} new clubs created` : ''}.`, '🗄️');
@@ -408,6 +410,10 @@ export function switchClub(G, clubId) {
   const neu = G.world.clubs.get(clubId);
   if (old) old.rating = 70;
   G.user.clubId = clubId;
+  // fresh squad → old XI/bench pins no longer apply; your tactics travel with you
+  delete G.user.xiOverrides;
+  delete G.user.benchOverride;
+  applyUserTact(G);
   if (neu.scouts.length === 0) {
     for (let i = 0; i < 3 && G.world.scoutsPool.length; i++) neu.scouts.push(G.world.scoutsPool.shift());
   }

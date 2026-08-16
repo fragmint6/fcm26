@@ -55,7 +55,12 @@ export function fmtMoneyFull(v) {
   const s = Math.round(v).toLocaleString('en-US');
   return (neg ? '−€' : '€') + s;
 }
-export function fmtWage(w) { return '€' + Math.round(w).toLocaleString('en-US') + '/wk'; }
+// wages are stored in €k per week (ctr.w) — format them readably
+export function fmtWage(w) {
+  if (w == null) return '—';
+  if (w >= 1000) return '€' + (w / 1000).toFixed(w >= 10000 ? 0 : 2).replace(/\.?0+$/, '') + 'M/wk';
+  return '€' + (w >= 100 ? Math.round(w) : Math.round(w * 10) / 10).toLocaleString('en-US') + 'k/wk';
+}
 export function fmtDate(iso) {
   const d = new Date(iso + 'T12:00:00');
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });

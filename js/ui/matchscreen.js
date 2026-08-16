@@ -1,9 +1,10 @@
 // ============ FCM 26 — matchday: pre-match, watch sim, post-match ============
 import { h, esc, fmtDate, flag, modal, toast, FORMATIONS, MENTALITIES, SLOT_AFF, SLOT_LABEL, NAT_NAME } from '../util.js';
 import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
-import { fullSim, quickSim, teamSheet, teamQuality, effOvr, matchSeed } from '../engine/match.js';
+import { fullSim, quickSim, teamSheet, teamQuality, effOvr, matchSeed, applyUserTact, pruneSlotOverrides } from '../engine/match.js';
 import { applyMatchResult, isUserMatch, compLabel } from '../engine/advance.js';
 import { crestEl, ntCrestEl, playerFaceEl, ratingClass, compLogoEl } from './ui.js';
+import { teamSheetEditor } from './teamsheet.js';
 import { TEAM_TALKS } from '../data/names.js';
 
 export function showMatchday(G) {
@@ -18,10 +19,7 @@ export function showMatchday(G) {
   const userSide = isNT ? (m.tnat.h === G.user.ntJob ? 'h' : 'a') : (m.home === G.user.clubId ? 'h' : 'a');
   const myClub = userSide === 'h' ? hc : ac;
 
-  // user team sheet with overrides
   const xiOver = (isNT ? {} : G.user.xiOverrides) || {};
-  const sheet = teamSheet(myClub, G.world, { xi: xiOver });
-  const q = teamQuality(sheet, G.world, G.user.tact.mentality || 3);
 
   const ov = h('div', { class: 'match-wrap' });
   document.body.append(ov);
@@ -34,37 +32,39 @@ export function showMatchday(G) {
     stageEl().innerHTML = '';
     const box = h('div', { style: 'display:grid;grid-template-columns:1fr 320px;gap:16px;padding:16px 20px;overflow:auto;flex:1' });
     stageEl().append(box);
+    const curSheet = teamSheet(myClub, G.world, { xi: isNT ? {} : (G.user.xiOverrides || {}), bench: isNT ? null : (G.user.benchOverride || null) });
+    const cq = teamQuality(curSheet, G.world, G.user.tact.mentality || 3);
     const editor = h('div', { class: 'card' });
     editor.append(h('div', { class: 'card-head' },
       h('div', { class: 'card-title' }, 'Team sheet'),
-      h('div', { class: 'card-sub' }, `Squad rating ${Math.round(q.ovr)} · Att ${Math.round(q.att)} · Mid ${Math.round(q.mid)} · Def ${Math.round(q.def)}`)));
-    editor.append(pitchEditor(G, myClub));
+      h('div', { class: 'card-sub' }, `Squad rating ${Math.round(cq.ovr)} · Att ${Math.round(cq.att)} · Mid ${Math.round(cq.mid)} · Def ${Math.round(cq.def)}`)));
+    editor.append(teamSheetEditor(G, myClub, { onChanged: () => preMatch(), roles: !isNT, readonly: isNT, bench: isNT ? null : undefined }));
     box.append(editor);
     const side = h('div');
     side.append(h('div', { class: 'card' },
       h('div', { class: 'card-title', style: 'margin-bottom:10px' }, 'Tactics'),
       h('div', { class: 'chip-row', style: 'margin-bottom:10px' }, ...MENTALITIES.map((mn, i) =>
-        h('button', { class: `tab${(G.user.tact.mentality || 3) === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; preMatch(); } }, mn))),
+        h('button', { class: `tab${(G.user.tact.mentality || 3) === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; applyUserTact(G); preMatch(); } }, mn))),
       h('label', { class: 'fld' }, 'Formation'),
-      h('select', { onchange: e => { G.user.tact.formation = e.target.value; pruneSlotOverrides(G); preMatch(); } },
+      h('select', { onchange: e => { G.user.tact.formation = e.target.value; applyUserTact(G); pruneSlotOverrides(G); preMatch(); } },
         ...Object.keys(FORMATIONS).map(f => h('option', { value: f, selected: G.user.tact.formation === f }, f))),
     ));
     side.append(h('div', { class: 'card' },
       h('div', { class: 'card-title', style: 'margin-bottom:10px' }, '🎤 Team talk'),
-      h('div', null, ...TEAM_TALKS.map(tt => h('div', { class: 'club-pick', style: 'padding:7px 10px', onclick: () => applyTalk(G, tt, sheet) },
+      h('div', null, ...TEAM_TALKS.map(tt => h('div', { class: 'club-pick', style: 'padding:7px 10px', onclick: () => applyTalk(G, tt) },
         h('div', { class: 'cp-info' }, h('div', { class: 'cp-name', style: 'font-size:13px' }, tt.label), h('div', { class: 'cp-sub' }, tt.desc))),
       ))));
     side.append(h('div', { class: 'card' },
-      h('div', { class: 'card-sub', style: 'margin-bottom:10px' }, 'Bench: ' + sheet.bench.map(pid => G.world.players.get(pid)?.name.split(' ').pop()).join(', ')),
       h('button', { class: 'btn btn-primary btn-block', style: 'margin-bottom:8px', onclick: () => startWatch() }, '▶ WATCH SIM'),
       h('button', { class: 'btn btn-block', onclick: () => instantResult() }, '⚡ INSTANT RESULT'),
     ));
     box.append(side);
   }
 
-  function applyTalk(G, tt, sheet) {
+  function applyTalk(G, tt) {
     const rng = Math.random();
     const backfire = rng < tt.risk;
+    const sheet = teamSheet(myClub, G.world, { xi: isNT ? {} : (G.user.xiOverrides || {}), bench: isNT ? null : (G.user.benchOverride || null) });
     for (const x of sheet.xi) {
       const p = G.world.players.get(x.pid);
       if (!p) continue;
@@ -77,8 +77,9 @@ export function showMatchday(G) {
   let res = null;
   function startWatch() {
     const seed = matchSeed(m.id) ^ (Math.random() * 1e9 | 0);
-    m.pseudoH = userSide === 'h' ? { ...myClub, xi: xiOver } : hc;
-    m.pseudoA = userSide === 'a' ? { ...myClub, xi: xiOver } : ac;
+    const plan = { xi: xiOver, benchOv: isNT ? undefined : G.user.benchOverride, kickPen: isNT ? undefined : G.user.kickers?.pen };
+    m.pseudoH = userSide === 'h' ? { ...myClub, ...plan } : hc;
+    m.pseudoA = userSide === 'a' ? { ...myClub, ...plan } : ac;
     m.userHome = userSide === 'h';
     m.bonus = [0.05, 0.035, 0.02, 0, -0.03, -0.06][G.settings.difficulty] || 0;
     res = fullSim(m, G.world, seed);
@@ -86,8 +87,9 @@ export function showMatchday(G) {
   }
   function instantResult() {
     const seed = matchSeed(m.id) ^ (Math.random() * 1e9 | 0);
-    m.pseudoH = userSide === 'h' ? { ...myClub, xi: xiOver } : hc;
-    m.pseudoA = userSide === 'a' ? { ...myClub, xi: xiOver } : ac;
+    const plan = { xi: xiOver, benchOv: isNT ? undefined : G.user.benchOverride, kickPen: isNT ? undefined : G.user.kickers?.pen };
+    m.pseudoH = userSide === 'h' ? { ...myClub, ...plan } : hc;
+    m.pseudoA = userSide === 'a' ? { ...myClub, ...plan } : ac;
     m.userHome = userSide === 'h';
     m.bonus = [0.05, 0.035, 0.02, 0, -0.03, -0.06][G.settings.difficulty] || 0;
     res = quickSim(m, G.world, seed);
@@ -261,55 +263,4 @@ function afterMatch(G) {
   const { saveGame } = G._flow || {};
   // autosave handled by main via event
   window.dispatchEvent(new CustomEvent('fcm-aftermatch'));
-}
-
-function pitchEditor(G, club) {
-  const el = h('div', { class: 'pitch', style: 'height:460px;max-width:340px' });
-  el.innerHTML = '<div class="line-mid"></div><div class="circle-mid"></div><div class="box" style="left:0;right:0;top:78%;height:22%;border-bottom:none"></div><div class="box" style="left:0;right:0;bottom:78%;height:22%;border-top:none"></div>';
-  const sheet = teamSheet(club, G.world, { xi: G.user.xiOverrides || {} });
-  const coords = {
-    GK: [8, 50], RB: [26, 88], RCB: [24, 63], LCB: [24, 37], LB: [26, 12], RWB: [28, 94], LWB: [28, 6], CB: [24, 50],
-    CDM: [44, 50], RCM: [50, 68], LCM: [50, 32], CM: [50, 50], CAM: [62, 50], RM: [46, 88], LM: [46, 12],
-    RW: [68, 84], LW: [68, 16], CF: [78, 50], RST: [78, 63], LST: [78, 37], ST: [84, 50],
-  };
-  for (const x of sheet.xi) {
-    const p = G.world.players.get(x.pid);
-    if (!p) continue;
-    const [top, left] = coords[x.slot] || [50, 50];
-    const dot = h('div', { class: `pdot${x.slot === 'GK' ? ' gk' : ''}`, style: `top:${top}%;left:${left}%`, title: `${p.name} (${p.pos}) — OVR ${Math.round(effOvr(p))}` },
-      h('span', { style: 'font-size:8.5px' }, p.name.split(' ').pop().slice(0, 5).toUpperCase()));
-    dot.addEventListener('click', () => slotPicker(G, club, x.slot));
-    el.append(dot);
-  }
-  return el;
-}
-function slotPicker(G, club, slot) {
-  const players = club.squad.map(id => G.world.players.get(id)).filter(p => p && !p.retired && !p.inj && p.sus <= 0 && !p.loan)
-    .sort((a, b) => {
-      const affA = SLOT_AFF[slot][a.pos] ?? 0, affB = SLOT_AFF[slot][b.pos] ?? 0;
-      return (effOvr(b) * (0.55 + affB * 0.45)) - (effOvr(a) * (0.55 + affA * 0.45));
-    });
-  const current = teamSheet(club, G.world, { xi: G.user.xiOverrides || {} }).xi.find(x => x.slot === slot)?.pid;
-  const ov = G.user.xiOverrides || {};
-  const list = h('div', { style: 'max-height:50vh;overflow:auto' });
-  let m;
-  for (const p of players) {
-    const pinnedHere = ov[slot] === p.id;
-    const pinnedAt = Object.entries(ov).find(([s, v]) => v === p.id && s !== slot)?.[0];
-    const row = h('div', { class: 'club-pick' + (p.id === current ? ' sel-highlight' : '') });
-    row.addEventListener('click', () => {
-      setSlotOverride(G, slot, p.id); // re-click pinned = back to auto; dup picks move him
-      m.close();
-      showMatchday(G); // re-render the pre-match stage in place
-    });
-    row.append(
-      h('span', { class: 'pos-chip' }, p.pos),
-      h('div', { class: 'cp-info' },
-        h('div', { class: 'cp-name' }, esc(p.name)),
-        h('div', { class: 'cp-sub' }, 'OVR ' + Math.round(effOvr(p)) + ' · ' + p.role.label + (p.role.fam ? '+' : '') + ' · fit ' + Math.round(p.fit) + '%')),
-      pinnedHere ? h('span', { class: 'tag on' }, 'pinned') : pinnedAt ? h('span', { class: 'tag', title: 'Picking moves him here' }, `at ${SLOT_LABEL[pinnedAt] || pinnedAt}`) : h('b', null, Math.round(p.fit) + '%'));
-    list.append(row);
-  }
-  m = modal({ title: `${SLOT_LABEL[slot] || slot} — pick player`, body: list,
-    footer: ov[slot] ? h('button', { class: 'btn btn-ghost', onclick: () => { setSlotOverride(G, slot, null); m.close(); showMatchday(G); } }, '↺ Back to auto') : null });
 }

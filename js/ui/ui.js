@@ -164,7 +164,8 @@ export function playerFaceEl(p, w = 84, ht = 64, club = null) {
     img.alt = '';
     img.loading = 'lazy';
     img.referrerPolicy = 'no-referrer';
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:top;display:block';
+    // full headshot, never cropped — EAFC-style complete portrait inside the frame
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:center;display:block';
     const next = () => {
       if (i < srcs.length) img.src = srcs[i++];
       else {
@@ -209,7 +210,7 @@ export function playerCard(p, opts = {}) {
   const shown = ovr >= 100 ? 99 : ovr;
   const el = h('div', { class: `pcard ${ratingTier(shown)}${compact ? ' pcard-compact' : ''}` });
   if (onClick) el.addEventListener('click', onClick);
-  const face = playerFaceEl(p, 160, 100);
+  const face = playerFaceEl(p, 160, 126);
   face.style.width = '100%';
   const attrs = p.pos === 'GK'
     ? [['DIV', derivedAtts(p).div], ['HAN', derivedAtts(p).han], ['KIC', derivedAtts(p).kic], ['REF', derivedAtts(p).ref], ['SPD', derivedAtts(p).spd], ['POS', derivedAtts(p).gkpos]]

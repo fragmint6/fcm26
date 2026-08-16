@@ -263,7 +263,8 @@ export function buildWorld() {
       bought: 0, sold: 0, fanBase: rep,
     };
     const balBase = rep >= 90 ? 550 : rep >= 85 ? 320 : rep >= 80 ? 170 : rep >= 75 ? 80 : rep >= 70 ? 35 : rep >= 65 ? 14 : rep >= 60 ? 6 : rep >= 55 ? 3 : 1.5;
-    club.bal = Math.round(balBase * (0.8 + rng.next() * 0.4));
+    // balBase is in MILLIONS of euros — balances/budgets are stored in raw euros
+    club.bal = Math.round(balBase * 1e6 * (0.8 + rng.next() * 0.4));
     club.tb = Math.round(club.bal * (0.5 + rng.next() * 0.3));
     club.mgr = genManager(club, rng);
     clubs.set(id, club);

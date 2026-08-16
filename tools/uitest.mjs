@@ -109,17 +109,36 @@ step('squad > position filters', () => {
   [...content.querySelectorAll('.chip-row .tab')].forEach(b => b.click());
 });
 
-// 4) team sheet pickers (set captain / kickers via select change)
+// 4) team sheet: EAFC-style editor — swap flow, role assignment, auto resets
 step('squad > sheet pickers', () => {
   current = 'squad'; route();
   [...content.querySelectorAll('.tabs .tab')].find(b => b.textContent.includes('Team Sheet')).click();
-  const sels = [...content.querySelectorAll('select')];
-  if (!sels.length) throw new Error('no pickers rendered');
-  sels.forEach(sel => {
-    const opt = [...sel.options].find(o => o.value);
-    sel.value = opt.value;
-    sel.dispatchEvent(new win.Event('change', { bubbles: true }));
-  });
+  const xiCards = [...content.querySelectorAll('.tspitch .tcard')];
+  const benchCards = [...content.querySelectorAll('.ts-bench .tcard')];
+  if (xiCards.length !== 11) throw new Error('expected 11 XI cards, got ' + xiCards.length);
+  if (benchCards.length !== 7) throw new Error('expected 7 bench cards, got ' + benchCards.length);
+  // role assignment: captain via card-grid modal
+  const changeBtns = [...content.querySelectorAll('.ts-role .btn')];
+  if (changeBtns.length !== 4) throw new Error('expected 4 role change buttons');
+  changeBtns[0].click();
+  const picks = [...document.querySelectorAll('.modal-overlay .ts-pick')];
+  if (!picks.length) throw new Error('no role pick cards');
+  picks[3].click(); // pick someone mid-squad (click sets the role)
+  if (!G.user.captain) throw new Error('captain was not set by modal pick');
+  // XI ↔ bench swap: tap XI card, then a bench card
+  delete G.user.xiOverrides;
+  const st = [...content.querySelectorAll('.tspitch .tcard')].find(c => c.dataset.pid);
+  st.click();
+  if (!content.querySelector('.tspitch .tcard.sel')) throw new Error('first tap did not select the card');
+  const bench = [...content.querySelectorAll('.ts-bench .tcard')][0];
+  bench.click();
+  // after rerender the swap should be pinned as an XI override
+  if (!G.user.xiOverrides || !Object.keys(G.user.xiOverrides).length) throw new Error('swap produced no XI override');
+  // formation must have synced to the world club
+  if (userClub(G).tact.formation !== G.user.tact.formation) throw new Error('user formation not synced to club');
+  // auto XI reset clears pins again
+  [...content.querySelectorAll('.ts-benchcard .btn')].find(b => b.textContent.includes('Auto XI')).click();
+  if (G.user.xiOverrides && Object.keys(G.user.xiOverrides).length) throw new Error('Auto XI did not clear overrides');
 });
 
 // 5) player modals: GK, star forward, youth/regen, squad everyone-face-render

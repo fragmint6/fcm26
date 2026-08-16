@@ -358,7 +358,7 @@ export function releasePlayer(G, pid) {
   const p = G.world.players.get(pid);
   const uclub = G.world.clubs.get(G.user.clubId);
   if (!p || !uclub) return;
-  const cost = Math.round(p.ctr.w * p.ctr.y * 52 * 0.5); // severance
+  const cost = Math.round(p.ctr.w * 1000 * p.ctr.y * 52 * 0.5); // severance (ctr.w in €k → raw €)
   uclub.squad = uclub.squad.filter(id => id !== pid);
   uclub.bal -= cost;
   p.clubId = null;

@@ -4,7 +4,8 @@ import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
 import { tableSorted, clubsInLeague } from '../engine/schedule.js';
 import { isUserMatch, compLabel } from '../engine/advance.js';
 import { playerValue, wageAsk, askPrice, aiSellResponse, playerContractResponse, executeUserBuy, executeUserLoanIn, respondOffer, listPlayer, unlistPlayer, releasePlayer, renewContract, totalWages } from '../engine/market.js';
-import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides } from '../engine/match.js';
+import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides, applyUserTact } from '../engine/match.js';
+import { teamSheetEditor } from './teamsheet.js';
 import { knownOf } from '../engine/scouting.js';
 import { expPos, genObjectives } from '../engine/board.js';
 import { promoteYouth } from '../engine/growth.js';
@@ -242,35 +243,13 @@ function playersTab(G, club) {
 
 function sheetTab(G, club) {
   const wrap = h('div');
-  const sheet = teamSheet(club, G.world);
+  applyUserTact(G);
+  const sheet = teamSheet(club, G.world, { xi: G.user.xiOverrides || {}, bench: G.user.benchOverride || null });
   const q = teamQuality(sheet, G.world, G.user.tact.mentality);
   wrap.append(h('div', { class: 'grid grid-4', style: 'margin-bottom:12px' },
     kpi('Squad rating', Math.round(q.ovr)), kpi('Attack', Math.round(q.att)), kpi('Midfield', Math.round(q.mid)), kpi('Defence', Math.round(q.def))));
-  wrap.append(h('div', { class: 'grid grid-2' },
-    pitchEl(G, club, sheet),
-    h('div', { class: 'card' },
-      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, 'Bench')),
-      h('div', { style: 'display:flex;flex-wrap:wrap;gap:8px' },
-        ...sheet.bench.map(pid => {
-          const p = G.world.players.get(pid);
-          return h('button', { class: 'club-pick', style: 'width:auto;padding:5px 8px', onclick: () => showPlayerModal(G, pid) },
-            h('span', { class: 'pos-chip' }, p.pos), h('span', { style: 'font-weight:700' }, esc(p.name)), h('span', { class: 'screen-sub' }, effOvr(p).toFixed(0)));
-        }))),
-    h('div', { class: 'card' },
-      h('div', { class: 'card-title', style: 'margin-bottom:10px' }, 'Set pieces & captain'),
-      pickerEl('Captain', G.user.captain, club.squad.map(id => G.world.players.get(id)).filter(Boolean), pid => { G.user.captain = pid; rerender(); }),
-      pickerEl('Penalties', G.user.kickers.pen, club.squad.map(id => G.world.players.get(id)).filter(Boolean), pid => { G.user.kickers.pen = pid; rerender(); }),
-      pickerEl('Free kicks', G.user.kickers.fk, club.squad.map(id => G.world.players.get(id)).filter(Boolean), pid => { G.user.kickers.fk = pid; rerender(); }),
-      pickerEl('Corners', G.user.kickers.cor, club.squad.map(id => G.world.players.get(id)).filter(Boolean), pid => { G.user.kickers.cor = pid; rerender(); }),
-    ),
-  ));
+  wrap.append(teamSheetEditor(G, club, { onChanged: rerender }));
   return wrap;
-}
-function pickerEl(label, selected, players, onPick) {
-  const sel = h('select', { onchange: e => onPick(e.target.value) },
-    h('option', { value: '' }, '— none —'),
-    ...players.map(p => h('option', { value: p.id, selected: p.id === selected }, p.name)));
-  return h('div', { style: 'margin-bottom:10px' }, h('label', { class: 'fld' }, label), sel);
 }
 
 function tacticsTab(G, club) {
@@ -278,7 +257,7 @@ function tacticsTab(G, club) {
   const grid = h('div', { class: 'grid', style: 'grid-template-columns:repeat(auto-fill,minmax(200px,1fr))' });
   for (const f of Object.keys(FORMATIONS)) {
     const el = h('div', { class: `card${G.user.tact.formation === f ? ' sel-highlight' : ''}`, style: 'cursor:pointer;text-align:center' });
-    el.addEventListener('click', () => { G.user.tact.formation = f; pruneSlotOverrides(G); rerender(); });
+    el.addEventListener('click', () => { G.user.tact.formation = f; applyUserTact(G); pruneSlotOverrides(G); rerender(); });
     el.append(h('div', { style: 'font-weight:800;font-size:13px;margin-bottom:6px' }, f), miniPitchEl(f));
     grid.append(el);
   }
@@ -286,7 +265,7 @@ function tacticsTab(G, club) {
   wrap.append(h('div', { class: 'card', style: 'margin-top:14px' },
     h('div', { class: 'card-title', style: 'margin-bottom:10px' }, 'Mentality'),
     h('div', { class: 'chip-row' }, ...MENTALITIES.map((m, i) =>
-      h('button', { class: `tab${G.user.tact.mentality === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; rerender(); } }, m))),
+      h('button', { class: `tab${G.user.tact.mentality === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; applyUserTact(G); rerender(); } }, m))),
   ));
   return wrap;
 }
@@ -1081,7 +1060,7 @@ export function showPlayerModal(G, pid) {
 
   const body = h('div');
   body.append(h('div', { style: 'display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap' },
-    playerFaceEl(p, 150, 110),
+    playerFaceEl(p, 176, 176),
     h('div', { style: 'flex:1;min-width:220px' },
       h('div', { style: 'display:flex;align-items:center;gap:10px' },
         hexEl(ovr, 54),
@@ -1414,53 +1393,4 @@ export function showResultModal(G, m) {
 }
 function statRow(label, hv, av) {
   return h('tr', null, h('td', null, label), h('td', { class: 'num', style: 'font-weight:700' }, hv), h('td', null), h('td', { class: 'num', style: 'font-weight:700' }, av));
-}
-
-// ================= pitch (team sheet editor) =================
-function pitchEl(G, club, sheet) {
-  const el = h('div', { class: 'pitch', style: 'height:430px;width:100%;max-width:330px' });
-  el.innerHTML = '<div class="line-mid"></div><div class="circle-mid"></div><div class="box" style="left:0;right:0;top:78%;height:22%;border-bottom:none"></div><div class="box" style="left:0;right:0;bottom:78%;height:22%;border-top:none"></div>';
-  const coords = {
-    GK: [8, 50], RB: [26, 88], RCB: [24, 63], LCB: [24, 37], LB: [26, 12], RWB: [28, 94], LWB: [28, 6], CB: [24, 50],
-    CDM: [44, 50], RCM: [50, 68], LCM: [50, 32], CM: [50, 50], CAM: [62, 50], RM: [46, 88], LM: [46, 12],
-    RW: [68, 84], LW: [68, 16], CF: [78, 50], RST: [78, 63], LST: [78, 37], ST: [84, 50],
-  };
-  for (const x of sheet.xi) {
-    const p = G.world.players.get(x.pid);
-    if (!p) continue;
-    const pinned = (G.user.xiOverrides || {})[x.slot] === p.id;
-    const [top, left] = coords[x.slot] || [50, 50];
-    const dot = h('div', { class: `pdot${x.slot === 'GK' ? ' gk' : ''}${pinned ? ' pinned' : ''}`, style: `top:${top}%;left:${left}%`, title: `${p.name} — ${p.pos} · OVR ${Math.round(effOvr(p))} · ${SLOT_LABEL[x.slot] || x.slot}${pinned ? ' (pinned — click slot to change)' : ' — click to change'}` },
-      h('span', { class: 'pdot-nm' }, p.name.split(' ').pop().slice(0, 5).toUpperCase()));
-    dot.addEventListener('click', () => slotPicker(G, x.slot));
-    el.append(dot);
-  }
-  return el;
-}
-function slotPicker(G, slot) {
-  const club = userClub(G);
-  const sheet = teamSheet(club, G.world);
-  const current = sheet.xi.find(x => x.slot === slot)?.pid;
-  const players = club.squad.map(id => G.world.players.get(id)).filter(p => p && !p.retired && !p.loan)
-    .sort((a, b) => {
-      const affA = SLOT_AFF[slot][a.pos] ?? 0, affB = SLOT_AFF[slot][b.pos] ?? 0;
-      return (effOvr(b) * (0.55 + affB * 0.45)) - (effOvr(a) * (0.55 + affA * 0.45));
-    });
-  const ov = G.user.xiOverrides || {};
-  const m = modal({
-    title: `${SLOT_LABEL[slot] || slot} — pick player`,
-    body: h('div', { style: 'max-height:55vh;overflow:auto' }, ...players.map(p => {
-      const pinnedHere = ov[slot] === p.id;
-      const pinnedAt = Object.entries(ov).find(([s, v]) => v === p.id && s !== slot)?.[0];
-      return h('div', { class: `club-pick${p.id === current ? ' sel-highlight' : ''}`, onclick: () => {
-        setSlotOverride(G, slot, p.id); // re-clicking the pinned player un-pins (auto)
-        m.close();
-        rerender();
-      } },
-      h('span', { class: 'pos-chip' }, p.pos),
-      h('div', { class: 'cp-info' }, h('div', { class: 'cp-name' }, esc(p.name)), h('div', { class: 'cp-sub' }, `OVR ${Math.round(effOvr(p))} · ${p.role.label}${p.role.fam ? '+' : ''} · fit ${Math.round(p.fit)}%`)),
-      pinnedHere ? h('span', { class: 'tag on' }, 'pinned') : pinnedAt ? h('span', { class: 'tag', title: 'Picking moves him here' }, `at ${SLOT_LABEL[pinnedAt] || pinnedAt}`) : null);
-    })),
-    footer: ov[slot] ? h('button', { class: 'btn btn-ghost', onclick: () => { setSlotOverride(G, slot, null); m.close(); rerender(); } }, '↺ Back to auto') : null,
-  });
 }

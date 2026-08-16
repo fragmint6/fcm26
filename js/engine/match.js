@@ -19,6 +19,14 @@ export function effOvr(p) {
   return v;
 }
 
+// Sync the manager's chosen tactics onto the world club so every teamSheet/sim
+// (formation, mentality) actually uses what the user picked — previously only
+// G.user.tact was written and club.tact (the AI setup) silently kept winning.
+export function applyUserTact(G) {
+  const c = G.user.clubId ? G.world.clubs.get(G.user.clubId) : null;
+  if (c && G.user.tact) c.tact = { formation: G.user.tact.formation, mentality: G.user.tact.mentality, press: G.user.tact.press, style: G.user.tact.style };
+}
+
 // pick the XI + bench for a club
 export function teamSheet(club, world, opts = {}) {
   const players = (club.squad || []).map(id => world.players.get(id)).filter(p => p && !p.retired && !p.inj && p.sus <= 0 && !p.loan);
@@ -58,7 +66,19 @@ export function teamSheet(club, world, opts = {}) {
     }
     if (best) { used.add(best.id); xi.push({ slot, pid: best.id }); }
   }
-  const bench = players.filter(p => !used.has(p.id)).sort((a, b) => effOvr(b) - effOvr(a)).slice(0, 7).map(p => p.id);
+  // bench: explicit override (order kept), validated against the available pool,
+  // then topped up to 7 with the best remaining players
+  const pool = players.filter(p => !used.has(p.id)).sort((a, b) => effOvr(b) - effOvr(a));
+  const benchOv = opts.bench || club.benchOv || null;
+  const bench = [];
+  if (Array.isArray(benchOv)) {
+    for (const pid of benchOv) {
+      if (bench.length >= 7) break;
+      const p = pool.find(x => x.id === pid);
+      if (p && !bench.includes(pid)) bench.push(pid);
+    }
+  }
+  for (const p of pool) { if (bench.length >= 7) break; if (!bench.includes(p.id)) bench.push(p.id); }
   return { xi, bench, tact };
 }
 
@@ -81,6 +101,53 @@ export function pruneSlotOverrides(G) {
   const slots = FORMATIONS[(G.user.tact && G.user.tact.formation)] || [];
   for (const s of Object.keys(ov)) if (!slots.includes(s)) delete ov[s];
   if (!Object.keys(ov).length) delete G.user.xiOverrides;
+}
+
+// Swap two squad members wherever they are on the team sheet:
+//   XI slot ↔ XI slot, XI slot ↔ bench, bench ↔ bench (order).
+// Only slots whose occupant actually changed are pinned; the bench override is
+// dropped whenever the resulting bench equals the automatic one.
+export function swapSheetPlayers(G, club, aPid, bPid) {
+  if (!aPid || !bPid || aPid === bPid) return false;
+  const world = G.world;
+  const cur = teamSheet(club, world, { xi: G.user.xiOverrides || {}, bench: G.user.benchOverride || null, tact: club.tact });
+  const aSlot = cur.xi.find(x => x.pid === aPid)?.slot || null;
+  const bSlot = cur.xi.find(x => x.pid === bPid)?.slot || null;
+  const aBench = cur.bench.indexOf(aPid), bBench = cur.bench.indexOf(bPid);
+  if (aSlot == null && aBench < 0) return false;
+  if (bSlot == null && bBench < 0) return false;
+  if (aSlot == null && bSlot == null) return false; // both on bench — order swap is cosmetic, skip
+  // desired XI map after the swap
+  const map = Object.fromEntries(cur.xi.map(x => [x.slot, x.pid]));
+  if (aSlot && bSlot) { map[aSlot] = bPid; map[bSlot] = aPid; }
+  else if (aSlot) map[aSlot] = bPid;
+  else if (bSlot) map[bSlot] = aPid;
+  // pin only slots that differ from the fully-automatic sheet
+  const auto = Object.fromEntries(teamSheet(club, world, { tact: club.tact }).xi.map(x => [x.slot, x.pid]));
+  const slots = Object.keys(map);
+  const ov = {};
+  for (const s of slots) if (map[s] !== auto[s]) ov[s] = map[s];
+  if (Object.keys(ov).length) G.user.xiOverrides = ov; else delete G.user.xiOverrides;
+  // desired bench set after the swap
+  const bench = cur.bench.slice();
+  const ia = bench.indexOf(aPid), ib = bench.indexOf(bPid);
+  if (ia >= 0 && aSlot) bench[ia] = bPid;
+  if (ib >= 0 && bSlot) bench[ib] = aPid;
+  recomputeBenchOverride(G, club, bench);
+  return true;
+}
+
+// Store a desired bench (ordered); clears the override when it matches the auto bench set.
+export function recomputeBenchOverride(G, club, desiredBench) {
+  const withXI = teamSheet(club, G.world, { xi: G.user.xiOverrides || {}, tact: club.tact });
+  const pool = club.squad.map(id => G.world.players.get(id))
+    .filter(p => p && !p.retired && !p.inj && p.sus <= 0 && !p.loan && !withXI.xi.some(x => x.pid === p.id))
+    .sort((a, b) => effOvr(b) - effOvr(a));
+  const desired = (desiredBench || []).filter(pid => pool.some(p => p.id === pid)).slice(0, 7);
+  const autoSet = new Set(pool.slice(0, 7).map(p => p.id));
+  const need = desired.length === 7 || desired.some(pid => !autoSet.has(pid));
+  if (need && desired.length) G.user.benchOverride = desired;
+  else delete G.user.benchOverride;
 }
 
 export function teamQuality(sheet, world, mentality = 3) {
@@ -287,7 +354,10 @@ export function fullSim(match, world, seed) {
     if (rng.chance(0.006)) {
       const side = rng.chance(0.5) ? 'h' : 'a';
       const sheet = side === 'h' ? hs : as;
-      const taker = rng.weighted(sheet.xi.filter(x => x.slot !== 'GK'), w => SHOT_W[w.slot] || 0.5);
+      // honour the manager's designated penalty taker when he's on the pitch
+      const prefPid = (side === 'h' ? hc.kickPen : ac.kickPen) || null;
+      const prefOn = prefPid && sheet.xi.find(x => x.pid === prefPid);
+      const taker = prefOn || rng.weighted(sheet.xi.filter(x => x.slot !== 'GK'), w => SHOT_W[w.slot] || 0.5);
       const p = world.players.get(taker.pid);
       const d = derivedAtts(p);
       const gk = keeper(side === 'h' ? 'a' : 'h');

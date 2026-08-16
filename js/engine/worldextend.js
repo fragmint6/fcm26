@@ -169,7 +169,7 @@ function createClub(G, grp) {
   const palette = PALETTE[hashStr(grp.name) % PALETTE.length];
   const league = LEAGUES[grp.lid];
   const balBase = rep >= 90 ? 550 : rep >= 85 ? 320 : rep >= 80 ? 170 : rep >= 75 ? 80 : rep >= 70 ? 35 : rep >= 65 ? 14 : rep >= 60 ? 6 : rep >= 55 ? 3 : 1.5;
-  const bal = Math.round(balBase * (0.8 + rng.next() * 0.4));
+  const bal = Math.round(balBase * 1e6 * (0.8 + rng.next() * 0.4));
   const club = {
     id, name: grp.name, short: grp.name, ctry: league.country, league: grp.lid,
     rep, c1: palette[0], c2: palette[1], badge: hashStr(grp.name) % 5,
