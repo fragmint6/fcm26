@@ -1,5 +1,5 @@
 // ============ FCM 26 — main screens ============
-import { h, esc, clamp, fmtMoney, fmtWage, fmtDate, fmtDateShort, fmtNum, addDays, flag, NAT_NAME, modal, toast, confirmBox, FORMATIONS, MENTALITIES, POS_LABEL, SLOT_AFF, POSITIONS, $ } from '../util.js';
+import { h, esc, clamp, fmtMoney, fmtWage, fmtDate, fmtDateShort, fmtNum, addDays, flag, NAT_NAME, modal, toast, confirmBox, FORMATIONS, MENTALITIES, POS_LABEL, SLOT_AFF, SLOT_LABEL, POSITIONS, $ } from '../util.js';
 import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
 import { tableSorted, clubsInLeague } from '../engine/schedule.js';
 import { isUserMatch, compLabel } from '../engine/advance.js';
@@ -212,7 +212,10 @@ export function renderSquad(G) {
   return root;
 }
 let squadTab = 'players';
-const rerender = () => { const sc = document.querySelector('#content'); if (sc && location.hash === '#squad') { sc.innerHTML = ''; sc.append(renderSquad(getG())); } };
+// router hook: main.js injects its route() so tab clicks re-render the ACTIVE screen
+let _routeFn = null;
+export const setRouterFn = fn => { _routeFn = fn; };
+const rerender = () => { if (_routeFn) _routeFn(); };
 function tabBtn(label, on, fn) { return h('button', { class: `tab${on ? ' on' : ''}`, onclick: fn }, label); }
 
 function playersTab(G, club) {

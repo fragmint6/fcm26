@@ -9,6 +9,8 @@ import { TEAM_TALKS } from '../data/names.js';
 export function showMatchday(G) {
   const m = G.pendingMatch;
   if (!m) return;
+  // never stack matchday overlays (e.g. double advance before CONTINUE)
+  document.querySelectorAll('.match-wrap').forEach(w => w.remove());
   const isNT = !!m.nt;
   const hc = isNT ? pseudoNT(G, m.tnat.h) : G.world.clubs.get(m.home);
   const ac = isNT ? pseudoNT(G, m.tnat.a) : G.world.clubs.get(m.away);

@@ -24,12 +24,12 @@ export function startWizard(onStart) {
         h('button', { class: 'btn', style: 'padding:12px 20px;font-size:15px', onclick: () => loadScreen() }, '📂 LOAD CAREER'),
         h('button', { class: 'btn btn-ghost', style: 'padding:12px 20px', onclick: () => showAbout() }, 'ℹ️ ABOUT'),
       ),
-      h('div', { class: 'title-sub', style: 'font-size:11.5px;max-width:560px' }, 'Fan-made tribute game. Club & player names are factual; ratings derive from the public player database. Club badges shown where available belong to their clubs; all player portraits are original generated artwork. Not affiliated with EA SPORTS.'),
+      h('div', { class: 'title-sub', style: 'font-size:11.5px;max-width:560px' }, 'Fan-made tribute game. Club & player names are factual; ratings derive from the public player database. Club crests courtesy of football-logos.cc; all player portraits are original generated artwork. Not affiliated with EA SPORTS.'),
     );
   }
 
   function showAbout() {
-    modal({ title: 'About FCM 26', body: h('p', { class: 'modal-msg', style: 'line-height:1.6' }, 'FCM 26 is an original fan project inspired by football manager career modes. Every match is simulated; you control tactics, transfers, scouting, the youth academy, finances and the board. Player names and club names are factual information. Ratings are our own original estimates — not any publisher\'s database. Club crests are original stylized vectors in club colours, and player portraits are procedurally generated.') });
+    modal({ title: 'About FCM 26', body: h('p', { class: 'modal-msg', style: 'line-height:1.6' }, 'FCM 26 is an original fan project inspired by football manager career modes. Every match is simulated; you control tactics, transfers, scouting, the youth academy, finances and the board. Player names and club names are factual information. Ratings are our own original estimates — not any publisher\'s database. Club crests load from football-logos.cc where the club is covered (788 of 792), otherwise a stylized generated crest in club colours; all player portraits are procedurally generated.') });
   }
 
   const st = { name: '', nat: 'ENG', style: 'Balanced', formation: '4-3-3 Holding', league: 'EPL', clubId: null, difficulty: 3, startDate: '2026-08-01', toggles: { training: true, transfers: true, academy: true, lockedClub: false } };

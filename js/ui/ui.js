@@ -2,6 +2,7 @@
 import { h, esc, clamp, hashStr, fmtMoney, flag, NAT_NAME, POS_LABEL } from '../util.js';
 import { derivedAtts, STAT_LABELS, SUBSTAT_GROUPS, GK_SUBSTAT_GROUPS } from '../data/worldgen.js';
 import { BADGE_REMOTE } from '../data/badges_remote.js';
+import { FACES_LOCAL } from '../data/faces_local.js';
 
 // ---------- club crests ----------
 // Badge fallback chain per club:
@@ -116,13 +117,15 @@ export function playerFaceEl(p, w = 84, ht = 64, club = null) {
   el.style.borderRadius = '8px';
   if (faceOff) { el.innerHTML = playerFaceSVG(p, w, ht); return el; }
   if (faceCache.get(p.id) !== 'gen') {
-    // 1) local cached DB headshot (assets/faces/p<dbid>.png)  2) live DB headshot URL  3) user files
+    // 1) local cached DB headshot  2) live DB headshot URL  3) user-provided file
+    //    (local candidates come from the FACES_LOCAL manifest — no speculative
+    //     404-prone requests for files that don't exist)
     const prof = p.profile || {};
     const srcs = [];
-    if (prof.photoId) srcs.push('assets/faces/p' + prof.photoId + '.png');
+    if (prof.photoId && FACES_LOCAL['p' + prof.photoId]) srcs.push('assets/faces/' + FACES_LOCAL['p' + prof.photoId]);
     if (prof.photoUrl) srcs.push(prof.photoUrl);
-    srcs.push('assets/faces/' + p.id + '.png', 'assets/faces/' + p.id + '.jpg',
-      'assets/faces/' + encodeURIComponent(p.name) + '.png', 'assets/faces/' + encodeURIComponent(p.name) + '.jpg');
+    const uf = FACES_LOCAL[p.id] || FACES_LOCAL[p.name];
+    if (uf) srcs.push('assets/faces/' + encodeURIComponent(uf));
     let i = 0;
     const img = document.createElement('img');
     img.alt = '';

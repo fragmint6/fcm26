@@ -1,6 +1,6 @@
 // ============ FCM 26 — main boot & router ============
 import { newGame, loadGame, saveGame, loadSaves, switchClub } from './state.js';
-import { setG, getG, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, advanceFromUI, userClub } from './ui/screens.js';
+import { setG, getG, setRouterFn, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, advanceFromUI, userClub } from './ui/screens.js';
 import { startWizard } from './ui/wizard.js';
 import { showMatchday } from './ui/matchscreen.js';
 import { h, esc, fmtMoney, fmtDate, RNG } from './util.js';
@@ -20,6 +20,7 @@ function onStart(g) {
   route();
 }
 function initUI() {
+  setRouterFn(route); // in-screen tab helpers call rerender() -> route()
   document.querySelectorAll('.nav-btn').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.screen; }));
   window.addEventListener('hashchange', route);
   document.querySelector('#btn-advance').addEventListener('click', () => advanceFromUI(G));

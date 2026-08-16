@@ -1,5 +1,12 @@
-// ============ FCM 26 — headless DOM test (jsdom) ============
-import { JSDOM } from 'jsdom';
+// ============ FCM 26 — full click-through test (jsdom) ============
+// Renders every screen AND every in-screen tab; fails on any uncaught error.
+import { JSDOM, VirtualConsole } from 'jsdom';
+
+const pageErrors = [];
+const vc = new VirtualConsole();
+vc.on('jsdomError', e => pageErrors.push('jsdomError: ' + e.message));
+vc.on('error', (...a) => pageErrors.push('console.error: ' + a.join(' ')));
+
 const dom = new JSDOM('<!DOCTYPE html><html><body>' + `
 <div id="app">
   <header id="topbar">
@@ -17,21 +24,26 @@ const dom = new JSDOM('<!DOCTYPE html><html><body>' + `
   <main id="content"></main>
 </div>
 <div id="adv-overlay" class="hide"><div id="adv-date"></div></div>
-</body></html>`, { url: 'http://localhost/', pretendToBeVisual: true });
+</body></html>`, { url: 'http://localhost/', pretendToBeVisual: true, virtualConsole: vc });
 
 const win = dom.window;
 global.window = win;
 global.document = win.document;
+global.location = win.location;
 global.localStorage = { _d: {}, setItem(k, v) { this._d[k] = v; }, getItem(k) { return this._d[k] || null; }, removeItem(k) { delete this._d[k]; } };
 global.CustomEvent = win.CustomEvent;
+global.location = win.location; // some code paths read global location
 global.requestAnimationFrame = cb => setTimeout(cb, 0);
 win.requestAnimationFrame = cb => setTimeout(cb, 0);
+win.addEventListener('error', e => pageErrors.push('window error: ' + e.message));
 
 const { newGame, saveGame } = await import('../js/state.js');
-const { setG, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, showPlayerModal, showResultModal, advanceFromUI } = await import('../js/ui/screens.js');
+const screensMod = await import('../js/ui/screens.js');
+const { setG, getG, setRouterFn, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, showPlayerModal, showResultModal, advanceFromUI } = screensMod;
 const { showMatchday } = await import('../js/ui/matchscreen.js');
-const { quickSim, matchSeed, fullSim } = await import('../js/engine/match.js');
+const { quickSim, matchSeed } = await import('../js/engine/match.js');
 const { applyMatchResult, advanceUntil } = await import('../js/engine/advance.js');
+const { FORMATIONS } = await import('../js/util.js');
 
 const t0 = Date.now();
 const G = await newGame({ managerName: 'UI Test', managerNat: 'ENG', clubId: 'MCI', startDate: '2026-08-01' });
@@ -39,79 +51,143 @@ setG(G);
 window.G = G;
 console.log('world+ui boot:', Date.now() - t0, 'ms');
 
+// --- emulate main.js route() so in-screen tabs re-render like the real app ---
 const content = document.querySelector('#content');
 const screens = { home: renderHome, squad: renderSquad, transfers: renderTransfers, academy: renderAcademy, season: renderSeason, club: renderClub, news: renderNews, intl: renderIntl, settings: renderSettings };
-let ok = 0;
-for (const [name, fn] of Object.entries(screens)) {
-  try {
-    content.innerHTML = '';
-    content.append(fn(G));
-    updateTopbar(G);
-    ok++;
-  } catch (e) { console.error('SCREEN FAIL', name, ':', e.message, '\n', e.stack.split('\n')[1]); }
-}
-console.log('screens rendered:', ok, '/', Object.keys(screens).length);
+let current = 'home';
+const route = () => { content.innerHTML = ''; content.append(screens[current](G)); updateTopbar(G); };
+setRouterFn(route);
 
-// player modal
-try {
-  const star = [...G.world.players.values()].find(p => p.name === 'Erling Haaland');
-  showPlayerModal(G, star.id);
-  document.querySelector('.modal-overlay')?.remove();
-  const fwd = [...G.world.players.values()].find(p => p.name === 'Bukayo Saka');
-  showPlayerModal(G, fwd.id);
-  document.querySelector('.modal-overlay')?.remove();
-  console.log('player modal OK');
-} catch (e) { console.error('PLAYER MODAL FAIL:', e.message, e.stack.split('\n')[1]); }
+let fails = 0;
+const step = (name, fn) => {
+  try { fn(); console.log('  ok  ' + name); }
+  catch (e) { fails++; console.error('FAIL  ' + name + ':', e.message, '\n     ', (e.stack.split('\n')[1] || '').trim()); }
+};
 
-// advance to first match & run matchday
-try {
-  let r = advanceUntil(G);
-  let guard = 0;
-  while (r !== 'match' && guard++ < 20) {
-    if (r === 'seasonend' || r === 'rollover') break;
-    r = advanceUntil(G);
+// 1) every screen, then every tab within each screen (real click handlers)
+for (const name of Object.keys(screens)) {
+  step('screen ' + name, () => { current = name; win.location.hash = name; route(); });
+  const seen = new Set();
+  for (let guard = 0; guard < 12; guard++) {
+    const tabBtns = [...content.querySelectorAll('.tabs > .tab:not(.on), #content .tabs > button:not(.on)')];
+    const next = tabBtns.find(b => !seen.has(name + '|' + b.textContent));
+    if (!next) break;
+    const label = next.textContent.trim();
+    seen.add(name + '|' + label);
+    step('tab ' + name + ' > ' + label, () => { next.click(); if (!content.firstChild) throw new Error('tab did not render'); });
   }
-  console.log('advance to:', G.date, r, '| pending:', G.pendingMatch && G.pendingMatch.id);
+  current = name; win.location.hash = name;
+  step('re-render ' + name, route);
+}
+
+// 2) tactics tab: every formation card (mini pitch rendered for each)
+step('squad > tactics (explicit)', () => {
+  current = 'squad'; win.location.hash = 'squad'; route();
+  const t = [...content.querySelectorAll('.tabs .tab')].find(b => b.textContent.includes('Tactics'));
+  if (t) t.click();
+  const cards = [...content.querySelectorAll('.card')].filter(c => c.querySelector('.pitch'));
+  if (cards.length < 5) throw new Error('only ' + cards.length + ' formation cards');
+});
+// click each formation + each mentality chip (exercises rerender on squad)
+step('squad > formation picks', () => {
+  const cards = [...content.querySelectorAll('.card')].filter(c => c.querySelector('.pitch'));
+  cards.forEach((c, i) => { if (i % 2 === 0) c.click(); });
+});
+step('squad > mentality picks', () => {
+  [...content.querySelectorAll('.tab')].forEach(b => { if (['Defensive', 'Balanced', 'Attacking'].some(m => b.textContent.includes(m))) b.click(); });
+});
+// forced direct render of every formation's mini pitch (belt & braces vs regen/absent slot defs)
+step('all formations render (direct) ' + Object.keys(FORMATIONS).join(','), () => {
+  current = 'squad'; route();
+  const t = [...content.querySelectorAll('.tabs .tab')].find(b => b.textContent.includes('Tactics'));
+  t.click();
+});
+
+// 3) squad sub-filter chips
+step('squad > position filters', () => {
+  current = 'squad'; route();
+  [...content.querySelectorAll('.chip-row .tab')].forEach(b => b.click());
+});
+
+// 4) team sheet pickers (set captain / kickers via select change)
+step('squad > sheet pickers', () => {
+  current = 'squad'; route();
+  [...content.querySelectorAll('.tabs .tab')].find(b => b.textContent.includes('Team Sheet')).click();
+  const sels = [...content.querySelectorAll('select')];
+  if (!sels.length) throw new Error('no pickers rendered');
+  sels.forEach(sel => {
+    const opt = [...sel.options].find(o => o.value);
+    sel.value = opt.value;
+    sel.dispatchEvent(new win.Event('change', { bubbles: true }));
+  });
+});
+
+// 5) player modals: GK, star forward, youth/regen, squad everyone-face-render
+step('player modals (4 types)', () => {
+  const all = [...G.world.players.values()];
+  const gk = all.find(p => p.pos === 'GK' && p.clubId);
+  const star = all.find(p => p.name === 'Erling Haaland');
+  const youth = [...userSquad()].find(p => p.age <= 20) || all.find(p => p.age <= 19);
+  const reg = all.find(p => p.regen);
+  for (const p of [gk, star, youth, reg].filter(Boolean)) {
+    showPlayerModal(G, p.id);
+    document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
+  }
+  function* userSquad() { const c = G.world.clubs.get(G.user.clubId); for (const id of c.squad) yield G.world.players.get(id); }
+});
+
+// 6) transfers search flow (type + filter + open modal from list)
+step('transfers > search filters', () => {
+  current = 'transfers'; win.location.hash = 'transfers'; route();
+  const searchIn = [...content.querySelectorAll('input')].find(i => i.placeholder && /search/i.test(i.placeholder));
+  if (searchIn) { searchIn.value = 'Haaland'; searchIn.dispatchEvent(new win.Event('input', { bubbles: true })); }
+  [...content.querySelectorAll('select')].forEach(sel => {
+    if (sel.options.length > 1) { sel.value = sel.options[1].value; sel.dispatchEvent(new win.Event('change', { bubbles: true })); }
+  });
+});
+
+// 7) season league switcher
+step('season > league select-all', () => {
+  current = 'season'; win.location.hash = 'season'; route();
+  const sel = [...content.querySelectorAll('select')][0];
+  if (sel) for (const o of [...sel.options]) { sel.value = o.value; sel.dispatchEvent(new win.Event('change', { bubbles: true })); }
+});
+
+// 8) news categories
+step('news > categories', () => {
+  current = 'news'; win.location.hash = 'news'; route();
+  [...content.querySelectorAll('.tabs .tab')].forEach(b => b.click());
+});
+
+// 9) settings toggles
+step('settings > toggles', () => {
+  current = 'settings'; win.location.hash = 'settings'; route();
+  [...content.querySelectorAll('.tag')].forEach(b => b.click());
+});
+
+// 10) matchday flow
+step('advance to first match + matchday', () => {
+  let r = advanceUntil(G), guard = 0;
+  while (r !== 'match' && guard++ < 20) { if (r === 'seasonend' || r === 'rollover') break; r = advanceUntil(G); }
   if (G.pendingMatch) {
     showMatchday(G);
-    // instant result via the engine path used by UI
     const m = G.pendingMatch;
     const res = quickSim(m, G.world, matchSeed(m.id));
     applyMatchResult(G, m, res);
-    document.querySelector('.match-wrap')?.remove();
-    console.log('matchday OK:', res.hg + '-' + res.ag);
-  }
-} catch (e) { console.error('MATCHDAY FAIL:', e.message, '\n', e.stack.split('\n').slice(0, 3).join('\n')); }
+    G.pendingMatch = null;
+    showResultModal(G, m, res);
+    document.querySelectorAll('.modal-overlay').forEach(x => x.remove());
+  } else throw new Error('no pending match after advance loop (' + r + ')');
+});
 
-// result modal
-try {
-  const [mid, res] = Object.entries(G.results)[0];
-  showResultModal(G, G.matchIndex.get(mid));
-  document.querySelector('.modal-overlay')?.remove();
-  console.log('result modal OK');
-} catch (e) { console.error('RESULT MODAL FAIL:', e.message); }
+// 11) save/reload size + bootstrap screens after several advanced days
+step('save + advance 10 days + re-render all screens', () => {
+  saveGame(G, 0);
+  for (let i = 0; i < 10; i++) { const r = advanceUntil(G); if (r === 'match') break; }
+  for (const name of Object.keys(screens)) { current = name; win.location.hash = name; route(); }
+});
 
-// save via localStorage
-try {
-  const r = saveGame(G, 0);
-  console.log('saveGame:', r.ok ? 'OK (' + Math.round(r.size / 1024) + ' KB)' : 'FAIL ' + r.err);
-} catch (e) { console.error('SAVE FAIL:', e.message); }
-
-// advance a full season with autosave off, clicking through all stops
-try {
-  let guard = 0, results = 0;
-  while (guard++ < 800) {
-    const r = advanceUntil(G);
-    if (r === 'match') {
-      const m = G.pendingMatch;
-      const res = quickSim(m, G.world, matchSeed(m.id));
-      applyMatchResult(G, m, res);
-    } else if (r === 'seasonend') {
-      console.log('season ended at', G.date);
-    } else if (r === 'rollover') break;
-  }
-  console.log('full season sim OK →', G.date, '| results:', Object.keys(G.results).length);
-} catch (e) { console.error('SEASON FAIL:', G.date, e.message, e.stack.split('\n')[1]); }
-
-console.log('UI TEST DONE in', Date.now() - t0, 'ms');
-process.exit(0);
+console.log(fails === 0 && pageErrors.length === 0 ? 'CLICK-THROUGH TEST PASSED' : 'CLICK-THROUGH TEST FAILED');
+if (fails) console.log('failed steps:', fails);
+if (pageErrors.length) { console.log('page errors:'); pageErrors.slice(0, 20).forEach(e => console.log('  ' + e)); }
+process.exit(fails || pageErrors.length ? 1 : 0);

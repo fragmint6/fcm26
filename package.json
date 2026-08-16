@@ -6,7 +6,10 @@
   "scripts": {
     "serve": "python3 -m http.server 8000 --bind 0.0.0.0",
     "smoke": "node tools/smoke.mjs",
-    "build:data": "node tools/build_import.mjs"
+    "build:data": "node tools/build_import.mjs",
+    "build:faces": "node tools/build_faces_manifest.mjs",
+    "build:badges": "node tools/build_remote_badges.mjs",
+    "test": "npm run smoke && node tools/uitest.mjs && node tools/uitest2.mjs"
   },
   "dependencies": {
     "jsdom": "^29.1.1"
