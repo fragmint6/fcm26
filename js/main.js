@@ -3,7 +3,7 @@ import { newGame, loadGame, saveGame, loadSaves, switchClub } from './state.js';
 import { setG, getG, updateTopbar, renderHome, renderSquad, renderTransfers, renderAcademy, renderSeason, renderClub, renderNews, renderIntl, renderSettings, advanceFromUI, userClub } from './ui/screens.js';
 import { startWizard } from './ui/wizard.js';
 import { showMatchday } from './ui/matchscreen.js';
-import { h, esc, fmtMoney, fmtDate, RNG } from '../util.js';
+import { h, esc, fmtMoney, fmtDate, RNG } from './util.js';
 
 let G = null;
 const screens = { home: renderHome, squad: renderSquad, transfers: renderTransfers, academy: renderAcademy, season: renderSeason, club: renderClub, news: renderNews, intl: renderIntl, settings: renderSettings };
