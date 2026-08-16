@@ -1,11 +1,14 @@
 // ============ FCM 26 — shared UI components ============
 import { h, esc, clamp, hashStr, fmtMoney, flag, NAT_NAME, POS_LABEL } from '../util.js';
 import { derivedAtts, STAT_LABELS, SUBSTAT_GROUPS, GK_SUBSTAT_GROUPS } from '../data/worldgen.js';
+import { BADGE_REMOTE } from '../data/badges_remote.js';
 
-// ---------- club crests (original stylized vectors) ----------
-// Real badge override: drop a PNG at assets/badges/<CLUBID>.png (e.g. ARS.png).
-// The game prefers it automatically and falls back to the generated crest.
-const badgeCache = new Map();
+// ---------- club crests ----------
+// Badge fallback chain per club:
+//   1. local override PNG at assets/badges/<CLUBID>.{png,webp,jpg,jpeg}
+//   2. remote 256px crest from football-logos.cc (js/data/badges_remote.js, 788 clubs)
+//   3. generated stylized SVG (original vectors, always works offline)
+const badgeCache = new Map(); // clubId -> resolved URL string, or 'gen'
 const SHIELD_PATHS = {
   0: 'M4 6 C4 3 8 2 12 2 C16 2 20 3 20 6 L20 14 C20 20 16 22 12 22 C8 22 4 20 4 14 Z',
   1: 'M12 2 A10 10 0 1 0 12 22 A10 10 0 1 0 12 2',
@@ -42,31 +45,41 @@ const BADGE_EXTS = ['png', 'webp', 'jpg', 'jpeg'];
 export function crestEl(club, size = 22, cls = '') {
   const el = h('span', { class: `crest ${cls}` });
   el.style.width = size + 'px'; el.style.height = size + 'px';
-  const gen = () => { badgeCache.set(club.id, 'gen'); el.innerHTML = crestSVG(club, size); };
-  if (club && badgeCache.get(club.id) !== 'gen') {
-    let i = 0;
-    const img = document.createElement('img');
-    img.alt = '';
-    img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
-    const next = () => {
-      if (i < BADGE_EXTS.length) {
-        const ext = BADGE_EXTS[i++];
-        img.src = 'assets/badges/' + club.id + '.' + ext;
-      } else gen();
-    };
-    img.addEventListener('error', next);
-    img.addEventListener('load', () => {
-      badgeCache.set(club.id, 'img');
-      // real crests ship on mixed backgrounds — seat them on a uniform light chip
-      el.classList.add('crest-img');
-      const pad = Math.max(1, Math.round(size * .09));
-      img.style.padding = pad + 'px';
-    });
-    next();
-    el.append(img);
-  } else if (club) {
+  if (!club) return el;
+  const gen = () => {
+    badgeCache.set(club.id, 'gen');
     el.innerHTML = crestSVG(club, size);
-  }
+  };
+  const cached = badgeCache.get(club.id);
+  if (cached === 'gen') { el.innerHTML = crestSVG(club, size); return el; }
+  const candidates = typeof cached === 'string'
+    ? [cached]
+    : [
+        ...BADGE_EXTS.map(ext => `assets/badges/${club.id}.${ext}`),
+        BADGE_REMOTE[club.id],
+      ].filter(Boolean);
+  if (!candidates.length) { el.innerHTML = crestSVG(club, size); return el; }
+  let i = 0;
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer';
+  img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+  const next = () => {
+    if (i < candidates.length) img.src = candidates[i++];
+    else gen();
+  };
+  img.addEventListener('error', next);
+  img.addEventListener('load', () => {
+    badgeCache.set(club.id, img.src);
+    // real crests ship on mixed backgrounds — seat them on a uniform light chip
+    el.classList.add('crest-img');
+    const pad = Math.max(1, Math.round(size * .09));
+    img.style.padding = pad + 'px';
+  });
+  next();
+  el.append(img);
   return el;
 }
 export function ntCrestEl(nt, size = 22, cls = '') {
