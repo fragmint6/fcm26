@@ -75,6 +75,39 @@ export function ntCrestEl(nt, size = 22, cls = '') {
   return h('span', { class: `crest ${cls}`, style: `width:${size}px;height:${size}px;background:#0d1120;font-size:${size * .62}px` }, flag(nt.id));
 }
 
+// ---------- competition logos ----------
+// Real league / cup / UEFA logos from football-logos.cc (same single source as club badges).
+// compLogoEl returns NULL for unknown/failed ids so callers seamlessly fall back to plain text.
+import { COMP_LOGOS } from '../data/league_logos.js';
+const compLogoBad = new Set(); // ids whose asset failed to load this session
+export function compLogoUrl(id) { return compLogoBad.has(id) ? null : (COMP_LOGOS[id] || null); }
+export function compLogoEl(id, size = 22, cls = '') {
+  const src = compLogoUrl(id);
+  if (!src) return null;
+  const el = h('span', { class: `comp-logo ${cls}`, title: id });
+  el.style.width = size + 'px';
+  el.style.height = size + 'px';
+  const img = document.createElement('img');
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer';
+  img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
+  const pad = Math.max(1, Math.round(size * .1));
+  img.style.padding = pad + 'px';
+  img.addEventListener('error', () => {
+    compLogoBad.add(id);
+    el.replaceWith(document.createComment(`comp-logo ${id} unavailable`));
+  });
+  img.src = src;
+  el.append(img);
+  return el;
+}
+// Inline "[logo] name" pair used wherever a competition is named; degrades to text when unmapped.
+export function compNameEl(id, label, size = 18, cls = '') {
+  return h('span', { class: `comp-name ${cls}` }, compLogoEl(id, size), h('span', null, label));
+}
+
 // ---------- stylized player face ----------
 const SKINS = ['#f2c9a0', '#e0ac7c', '#c68b5c', '#8d5a38', '#6b4226'];
 const HAIRS = [

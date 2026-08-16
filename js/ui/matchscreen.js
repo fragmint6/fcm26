@@ -3,7 +3,7 @@ import { h, esc, fmtDate, flag, modal, toast, FORMATIONS, MENTALITIES, SLOT_AFF,
 import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
 import { fullSim, quickSim, teamSheet, teamQuality, effOvr, matchSeed } from '../engine/match.js';
 import { applyMatchResult, isUserMatch, compLabel } from '../engine/advance.js';
-import { crestEl, ntCrestEl, playerFaceEl, ratingClass } from './ui.js';
+import { crestEl, ntCrestEl, playerFaceEl, ratingClass, compLogoEl } from './ui.js';
 import { TEAM_TALKS } from '../data/names.js';
 
 export function showMatchday(G) {
@@ -202,7 +202,7 @@ export function showMatchday(G) {
     card.append(
       h('div', { style: 'text-align:center;font-size:20px;font-weight:900;font-style:italic;margin-bottom:12px' },
         `${isNT ? ntName(G, m.tnat.h) : hc.name} ${res.hg}–${res.ag} ${isNT ? ntName(G, m.tnat.a) : ac.name}`),
-      h('div', { style: 'text-align:center;color:var(--dim);margin-bottom:14px' }, `${compLabel(m, G)} · ${fmtDate(m.date)}`),
+      h('div', { style: 'text-align:center;color:var(--dim);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:7px' }, compLogoEl(m.comp, 18), `${compLabel(m, G)} · ${fmtDate(m.date)}`),
       h('div', { style: 'text-align:center;margin-bottom:14px' },
         h('span', { class: 'tag', style: 'font-size:14px;padding:6px 18px' }, won ? '✅ VICTORY' : drew ? '🤝 DRAW' : '❌ DEFEAT')),
     );
@@ -233,7 +233,7 @@ export function showMatchday(G) {
       h('div', { style: 'text-align:center' },
         h('div', { class: 'match-score-num' }, '0–0'),
         h('div', { class: 'match-minute' }, m.date === G.date ? "0'" : '—'),
-        h('div', { class: 'card-sub', style: 'font-size:11px' }, compLabel(m, G)),
+        h('div', { class: 'card-sub', style: 'font-size:11px;display:flex;align-items:center;justify-content:center;gap:5px;margin-top:2px' }, compLogoEl(m.comp, 14), compLabel(m, G)),
       ),
       teamBox(ac, isNT, m.tnat?.a),
     ),

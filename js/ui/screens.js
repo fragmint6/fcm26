@@ -8,7 +8,7 @@ import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides } f
 import { knownOf } from '../engine/scouting.js';
 import { expPos, genObjectives } from '../engine/board.js';
 import { promoteYouth } from '../engine/growth.js';
-import { crestEl, ntCrestEl, playerFaceEl, playerCard, hexEl, formStripEl, statRowsEl, kpi, posLabel, ratingClass, detailedStatsEl } from './ui.js';
+import { crestEl, ntCrestEl, playerFaceEl, playerCard, hexEl, formStripEl, statRowsEl, kpi, posLabel, ratingClass, detailedStatsEl, compLogoEl, compNameEl } from './ui.js';
 import { showMatchday } from './matchscreen.js';
 
 export const userClub = G => G.world.clubs.get(G.user.clubId);
@@ -53,7 +53,7 @@ export function renderHome(G) {
     root.append(h('div', { class: 'matchday-banner' },
       h('div', { style: 'font-size:26px' }, '⚽'),
       h('div', { style: 'flex:1' },
-        h('div', { style: 'font-weight:800;font-size:15px' }, 'MATCHDAY — ' + compLabel(pend, G)),
+        h('div', { style: 'font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap' }, 'MATCHDAY —', compLogoEl(pend.comp, 20), compLabel(pend, G)),
         h('div', { class: 'screen-sub', style: 'margin:0' }, matchLine(G, pend)),
       ),
       h('button', { class: 'btn btn-primary', style: 'font-size:15px;padding:12px 22px', onclick: () => showMatchday(G) }, '▶ PLAY MATCH'),
@@ -62,7 +62,7 @@ export function renderHome(G) {
     root.append(h('div', { class: 'card', style: 'display:flex;align-items:center;gap:14px;margin-bottom:14px' },
       h('div', { style: 'font-size:26px' }, '📅'),
       h('div', { style: 'flex:1' },
-        h('div', { style: 'font-weight:700' }, `Next match: ${compLabel(nx, G)} — ${fmtDate(nx.date)}`),
+        h('div', { style: 'font-weight:700;display:flex;align-items:center;gap:7px;flex-wrap:wrap' }, 'Next match:', compLogoEl(nx.comp, 18), `${compLabel(nx, G)} — ${fmtDate(nx.date)}`),
         h('div', { class: 'screen-sub', style: 'margin:0' }, matchLine(G, nx)),
       ),
       h('div', { class: 'formstrip-el' }),
@@ -80,7 +80,7 @@ export function renderHome(G) {
       crestEl(club, 36), h('div', { style: 'font-size:22px;font-weight:900;font-style:italic' }, `${res.hg}–${res.ag}`),
       opp ? crestEl(opp, 36) : null,
       h('div', { style: 'flex:1' },
-        h('div', { style: 'font-weight:700;font-size:13.5px' }, `${won ? 'Won' : drew ? 'Drew' : 'Lost'} vs ${opp ? opp.name : ''} · ${compLabel(m, G)}`),
+        h('div', { style: 'font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap' }, `${won ? 'Won' : drew ? 'Drew' : 'Lost'} vs ${opp ? opp.name : ''} ·`, compLogoEl(m.comp, 16), compLabel(m, G)),
         h('div', { class: 'screen-sub', style: 'margin:0' }, fmtDate(m.date)),
       ),
       formStripEl(G, club.id),
@@ -92,12 +92,12 @@ export function renderHome(G) {
     kpi('Balance', fmtMoney(club.bal)),
     kpi('Transfer budget', fmtMoney(club.tb)),
     kpi('Wage budget', fmtWage(club.wb)),
-    kpi('League position', pos ? `${pos}${ord(pos)}` : '—', league.name),
+    kpi('League position', pos ? `${pos}${ord(pos)}` : '—', compNameEl(league.id, league.name, 14)),
   ));
   const grid = h('div', { class: 'grid grid-2' });
   // league mini table
   grid.append(h('div', { class: 'card' },
-    h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, league.name), h('div', { class: 'card-sub' }, `${t.length} teams`)),
+    h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, compNameEl(league.id, league.name, 20)), h('div', { class: 'card-sub' }, `${t.length} teams`)),
     miniTableEl(G, club.league, pos),
   ));
   // objectives
@@ -154,8 +154,9 @@ function objRowEl(G, o, club) {
     pct = clamp((o.count || 0) / o.target * 100, 0, 100);
     detail = `${o.count || 0}/${o.target}`;
   }
+  const oComp = o.type === 'pos' ? club.league : o.type === 'cup' ? o.cup : o.type === 'euro' ? o.comp : null;
   return h('div', { class: 'obj-row' },
-    h('div', { class: 'obj-label' }, o.label),
+    h('div', { class: 'obj-label', style: 'display:flex;align-items:center;gap:7px' }, compLogoEl(oComp, 17), h('span', null, o.label)),
     h('div', { class: 'obj-track' }, h('div', { class: 'obj-fill', style: `width:${clamp(pct, 2, 100)}%` })),
     h('div', { class: 'obj-w' }, detail),
   );
@@ -652,8 +653,10 @@ export function renderSeason(G) {
 }
 function leagueTab(G) {
   const wrap = h('div');
-  wrap.append(h('select', { style: 'width:auto;margin-bottom:10px', onchange: e => { seasonLeague = e.target.value; rerender(); } },
-    ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === seasonLeague }, l.name))));
+  wrap.append(h('div', { class: 'comp-sel', style: 'max-width:340px;margin-bottom:10px' },
+    h('select', { style: 'width:auto', onchange: e => { seasonLeague = e.target.value; rerender(); } },
+      ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === seasonLeague }, l.name))),
+    compLogoEl(seasonLeague, 26)));
   const t = tableSorted(G, seasonLeague);
   const lg = LEAGUES[seasonLeague];
   const promoN = (() => { for (const l of Object.values(LEAGUES)) if (l.proRel && l.proRel.upTo === seasonLeague) return l.proRel.n; return 0; })();
@@ -708,7 +711,7 @@ function cupsTab(G) {
   for (const cup of cups) {
     const st = G.sched.cups[cup.id];
     const card = h('div', { class: 'card' },
-      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, cup.name),
+      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, compNameEl(cup.id, cup.name, 20)),
         h('div', { class: 'card-sub' }, st && st.winner ? `Winners: ${G.world.clubs.get(st.winner)?.name}` : st ? `Next round: ${st.round}` : '')));
     if (st) {
       const all = [...(st.history || []), ...(st.matches.length ? [{ round: st.round, matches: st.matches }] : [])];
@@ -738,7 +741,7 @@ function europeTab(G) {
     const st = G.sched.euro[key];
     if (!st || !st.teams) continue;
     const card = h('div', { class: 'card' },
-      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, UEFA[compId].name),
+      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, compNameEl(compId, UEFA[compId].name, 20)),
         h('div', { class: 'card-sub' }, st.winner ? `Champions: ${G.world.clubs.get(st.winner)?.name}` : st.state === 'lp' ? 'League phase' : `Knockouts — ${st.round}`)));
     if (st.state === 'lp' || st.state === 'ko') {
       const t = tableSorted(G, compId);
@@ -790,7 +793,7 @@ function calTab(G) {
       const an = m.nt ? (G.world.nts.find(n => n.id === m.tnat?.a) || {}).name : ac?.name;
       card.append(h('div', { class: 'obj-row', style: user ? 'background:rgba(182,255,46,.06);border-radius:6px;padding:3px 6px' : 'padding:3px 6px', onclick: () => res && showResultModal(G, m) },
         h('div', { class: 'obj-label' }, `${hn || m.home} ${res ? `${res.hg}–${res.ag}` : 'vs'} ${an || m.away}`),
-        h('span', { class: 'screen-sub' }, `${compLabel(m, G)}${user ? ' · YOUR MATCH' : ''}`)));
+        h('span', { class: 'screen-sub', style: 'display:inline-flex;align-items:center;gap:5px' }, compLogoEl(m.comp, 13), `${compLabel(m, G)}${user ? ' · YOUR MATCH' : ''}`)));
     }
     wrap.append(card);
   }
@@ -853,7 +856,7 @@ export function renderClub(G) {
         h('tbody', null, ...G.hist.seasons.map(s => h('tr', null,
           h('td', null, `${s.year}/${s.year + 1}`),
           h('td', null, G.world.clubs.get(s.club)?.name || '—'),
-          h('td', null, LEAGUES[s.league]?.name || '—'),
+          h('td', null, LEAGUES[s.league] ? compNameEl(s.league, LEAGUES[s.league].name, 16) : '—'),
           h('td', null, s.pos ? `${s.pos}${ord(s.pos)}` : '—'))))))));
   }
   return root;
@@ -961,7 +964,7 @@ export function renderIntl(G) {
       const an = (G.world.nts.find(n => n.id === m.tnat.a) || {}).name;
       card.append(h('div', { class: 'obj-row' },
         h('div', { class: 'obj-label' }, `${hn} ${res ? `${res.hg}–${res.ag}` : 'vs'} ${an}`),
-        h('span', { class: 'screen-sub' }, `${compLabel(m, G)} · ${fmtDateShort(m.date)}`)));
+        h('span', { class: 'screen-sub', style: 'display:inline-flex;align-items:center;gap:5px' }, compLogoEl(m.comp, 13), `${compLabel(m, G)} · ${fmtDateShort(m.date)}`)));
     }
     root.append(card);
   } else {
@@ -1309,17 +1312,17 @@ function seasonEndModal(G) {
   const pos = t.findIndex(r => r.id === club.id) + 1;
   const body = h('div');
   body.append(h('div', { style: 'text-align:center;font-size:17px;font-weight:800;margin-bottom:12px' }, `🏆 ${G.year}/${G.year + 1} season complete`));
-  body.append(h('div', { class: 'card-sub', style: 'text-align:center;margin-bottom:12px' }, `${club.name} finished ${pos}${ord(pos)} in the ${LEAGUES[club.league].name}.`));
+  body.append(h('div', { class: 'card-sub', style: 'text-align:center;margin-bottom:12px' }, `${club.name} finished ${pos}${ord(pos)} in the `, compNameEl(club.league, LEAGUES[club.league].name, 15), '.'));
   body.append(h('div', { class: 'card', style: 'margin-bottom:10px' },
     h('div', { class: 'card-title', style: 'margin-bottom:8px' }, 'League champions'),
     h('div', null, ...Object.entries(champs).slice(0, 14).map(([lid, cid]) => {
       const c = G.world.clubs.get(cid);
-      return h('div', { class: 'obj-row' }, h('div', { class: 'obj-label' }, LEAGUES[lid].name), h('b', null, c ? c.name : '—'));
+      return h('div', { class: 'obj-row' }, h('div', { class: 'obj-label' }, compNameEl(lid, LEAGUES[lid].name, 16)), h('b', null, c ? c.name : '—'));
     }))));
-  const cupWinners = Object.values(CUPS).filter(c => G.sched.cups[c.id] && G.sched.cups[c.id].winner).map(c => ({ name: c.name, cid: G.sched.cups[c.id].winner }));
+  const cupWinners = Object.values(CUPS).filter(c => G.sched.cups[c.id] && G.sched.cups[c.id].winner).map(c => ({ id: c.id, name: c.name, cid: G.sched.cups[c.id].winner }));
   if (cupWinners.length) body.append(h('div', { class: 'card' },
     h('div', { class: 'card-title', style: 'margin-bottom:8px' }, 'Cup winners'),
-    h('div', null, ...cupWinners.map(w => h('div', { class: 'obj-row' }, h('div', { class: 'obj-label' }, w.name), h('b', null, G.world.clubs.get(w.cid)?.name || '—'))))));
+    h('div', null, ...cupWinners.map(w => h('div', { class: 'obj-row' }, h('div', { class: 'obj-label' }, compNameEl(w.id, w.name, 16)), h('b', null, G.world.clubs.get(w.cid)?.name || '—'))))));
   modal({
     title: 'Season review',
     body,

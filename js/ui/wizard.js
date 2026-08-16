@@ -2,7 +2,7 @@
 import { h, esc, fmtMoney, flag, NAT_NAME, toast, modal, FORMATIONS, $ } from '../util.js';
 import { LEAGUES, CLUBS } from '../data/clubs.js';
 import { newGame, loadGame, loadSaves } from '../state.js';
-import { crestEl } from './ui.js';
+import { crestEl, compLogoEl, compNameEl } from './ui.js';
 
 function estBudget(rep) {
   const balBase = rep >= 90 ? 550 : rep >= 85 ? 320 : rep >= 80 ? 170 : rep >= 75 ? 80 : rep >= 70 ? 35 : rep >= 65 ? 14 : rep >= 60 ? 6 : rep >= 55 ? 3 : 1.5;
@@ -60,13 +60,23 @@ export function startWizard(onStart) {
       h('div', { class: 'card-title', style: 'font-size:18px;margin-bottom:10px' }, 'Choose your club'),
       h('div', { class: 'frow' },
         h('div', null, h('label', { class: 'fld' }, 'League'),
-          h('select', { onchange: e => { st.league = e.target.value; drawClubs(); } },
-            ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === st.league }, l.name)))),
+          h('div', { class: 'comp-sel' },
+            h('select', { id: 'wiz-league-sel', onchange: e => { st.league = e.target.value; syncLeagueLogo(); drawClubs(); } },
+              ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === st.league }, l.name))),
+            h('span', { id: 'wiz-league-logo' }))),
         h('div', null, h('label', { class: 'fld' }, 'Search'), h('input', { type: 'text', placeholder: 'Club name…', oninput: e => drawClubs(e.target.value.toLowerCase()) })),
       ),
       h('div', { id: 'club-list', style: 'max-height:52vh;overflow:auto' }));
     root.append(box);
+    syncLeagueLogo();
     drawClubs();
+    function syncLeagueLogo() {
+      const slot = $('#wiz-league-logo');
+      if (!slot) return;
+      slot.innerHTML = '';
+      const logo = compLogoEl(st.league, 28);
+      if (logo) slot.append(logo);
+    }
     function drawClubs(q = '') {
       const list = $('#club-list');
       list.innerHTML = '';
@@ -76,7 +86,7 @@ export function startWizard(onStart) {
         const c = { id: raw[0], name: raw[1], short: raw[2], c1: raw[6], c2: raw[7], badge: raw[8], mono: raw[9], rep: raw[5] };
         const el = h('div', { class: `club-pick${st.clubId === c.id ? ' sel-highlight' : ''}`, onclick: () => { st.clubId = c.id; const nb = document.getElementById('wiz-next'); if (nb) nb.disabled = false; drawClubs(q); } },
           crestEl(c, 34),
-          h('div', { class: 'cp-info' }, h('div', { class: 'cp-name' }, c.name), h('div', { class: 'cp-sub' }, `${league.name} · Reputation ${c.rep} · Squad avg ~${Math.round(50 + (c.rep - 50) * 0.72)} · Est. budget ${fmtMoney(estBudget(c.rep) * 1e6)}`)),
+          h('div', { class: 'cp-info' }, h('div', { class: 'cp-name' }, c.name), h('div', { class: 'cp-sub' }, compNameEl(league.id, league.name, 16), ` · Reputation ${c.rep} · Squad avg ~${Math.round(50 + (c.rep - 50) * 0.72)} · Est. budget ${fmtMoney(estBudget(c.rep) * 1e6)}`)),
           h('span', { class: 'pos-chip' }, '★'.repeat(c.rep >= 88 ? 5 : c.rep >= 82 ? 4 : c.rep >= 74 ? 3 : c.rep >= 64 ? 2 : 1)),
         );
         list.append(el);
