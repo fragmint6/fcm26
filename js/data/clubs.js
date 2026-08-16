@@ -538,6 +538,16 @@ L('SRL', 'Serbian SuperLiga', 'SRB', 1, 16, 5, null, { ucl: 1, uel: 1, uecl: 0 }
 L('LS1', 'Romanian SuperLiga', 'ROU', 1, 16, 5, null, { ucl: 1, uel: 1, uecl: 0 });
 L('SPL', 'Saudi Pro League', 'KSA', 1, 18, 15, null, { ucl: 0, uel: 2, uecl: 0 });
 
+// Canonical UI display order for league pickers: big-5 first (top tier ahead of
+// second tier per country), then the rest of Europe by prestige, Saudi last.
+// Any league id not listed (e.g. dynamic/imported leagues) sorts after, in
+// LEAGUES load order.
+export function leagueDisplayList() {
+  const rank = new Map(LEAGUE_ORDER.map((id, i) => [id, i]));
+  return Object.values(LEAGUES).sort((a, b) =>
+    (rank.get(a.id) ?? LEAGUE_ORDER.length) - (rank.get(b.id) ?? LEAGUE_ORDER.length));
+}
+
 // ============ CUPS & SUPER CUPS ============
 export const CUPS = {
   FAC: { id: 'FAC', name: 'FA Cup', country: 'ENG', type: 'cup', entrants: 'all', rounds: 6, prize: 6 },

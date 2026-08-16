@@ -1,10 +1,10 @@
 // ============ FCM 26 — main screens ============
 import { h, esc, clamp, fmtMoney, fmtWage, fmtDate, fmtDateShort, fmtNum, addDays, flag, NAT_NAME, modal, toast, confirmBox, FORMATIONS, MENTALITIES, POS_LABEL, SLOT_AFF, SLOT_LABEL, POSITIONS, $ } from '../util.js';
-import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
+import { LEAGUES, CUPS, UEFA, leagueDisplayList } from '../data/clubs.js';
 import { tableSorted, clubsInLeague } from '../engine/schedule.js';
 import { isUserMatch, compLabel } from '../engine/advance.js';
 import { playerValue, wageAsk, askPrice, aiSellResponse, playerContractResponse, executeUserBuy, executeUserLoanIn, respondOffer, listPlayer, unlistPlayer, releasePlayer, renewContract, totalWages } from '../engine/market.js';
-import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides, applyUserTact } from '../engine/match.js';
+import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides, applyUserTact, TACT_DEFAULTS, DEF_STYLES, BUILDUP_STYLES, CHANCE_STYLES } from '../engine/match.js';
 import { teamSheetEditor } from './teamsheet.js';
 import { knownOf } from '../engine/scouting.js';
 import { expPos, genObjectives } from '../engine/board.js';
@@ -254,10 +254,13 @@ function sheetTab(G, club) {
 
 function tacticsTab(G, club) {
   const wrap = h('div');
+  const t = { ...TACT_DEFAULTS, ...G.user.tact };
+  const save = () => { Object.assign(G.user.tact, t); applyUserTact(G); };
+
   const grid = h('div', { class: 'grid', style: 'grid-template-columns:repeat(auto-fill,minmax(200px,1fr))' });
   for (const f of Object.keys(FORMATIONS)) {
-    const el = h('div', { class: `card${G.user.tact.formation === f ? ' sel-highlight' : ''}`, style: 'cursor:pointer;text-align:center' });
-    el.addEventListener('click', () => { G.user.tact.formation = f; applyUserTact(G); pruneSlotOverrides(G); rerender(); });
+    const el = h('div', { class: `card${t.formation === f ? ' sel-highlight' : ''}`, style: 'cursor:pointer;text-align:center' });
+    el.addEventListener('click', () => { t.formation = f; save(); pruneSlotOverrides(G); rerender(); });
     el.append(h('div', { style: 'font-weight:800;font-size:13px;margin-bottom:6px' }, f), miniPitchEl(f));
     grid.append(el);
   }
@@ -265,7 +268,41 @@ function tacticsTab(G, club) {
   wrap.append(h('div', { class: 'card', style: 'margin-top:14px' },
     h('div', { class: 'card-title', style: 'margin-bottom:10px' }, 'Mentality'),
     h('div', { class: 'chip-row' }, ...MENTALITIES.map((m, i) =>
-      h('button', { class: `tab${G.user.tact.mentality === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; applyUserTact(G); rerender(); } }, m))),
+      h('button', { class: `tab${t.mentality === i + 1 ? ' on' : ''}`, onclick: () => { t.mentality = i + 1; save(); rerender(); } }, m))),
+  ));
+
+  // segmented option row (EAFC-style)
+  const segRow = (label, opts, cur, cb) => h('div', { class: 'tac-group' },
+    h('div', { class: 'tac-label' }, label),
+    h('div', { class: 'tac-opts' }, ...opts.map(([k, l]) =>
+      h('button', { class: `tab${cur === k ? ' on' : ''}`, onclick: () => { cb(k); save(); rerender(); } }, l))));
+
+  // slider row with live volt fill + value output
+  const sliderRow = (name, min, max, val, cb) => {
+    const inp = h('input', { type: 'range', min, max, step: 1, value: val });
+    const out = h('output', null, String(val));
+    const sync = () => { inp.style.setProperty('--fill', ((inp.value - min) / (max - min) * 100) + '%'); out.textContent = inp.value; };
+    inp.addEventListener('input', sync);
+    inp.addEventListener('change', () => { cb(Number(inp.value)); save(); });
+    sync();
+    return h('div', { class: 'tac-slider' }, h('div', { class: 'tac-name' }, name), inp, out);
+  };
+
+  wrap.append(h('div', { class: 'grid grid-2', style: 'margin-top:14px' },
+    h('div', { class: 'card' },
+      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, '🛡️ Defensive'), h('div', { class: 'card-sub' }, 'how your team defends')),
+      segRow('Defensive style', DEF_STYLES, t.defStyle, v => t.defStyle = v),
+      sliderRow('Defensive width', 1, 10, t.widthDef, v => t.widthDef = v),
+      sliderRow('Depth', 1, 10, t.depth, v => t.depth = v),
+      h('div', { class: 'card-sub', style: 'line-height:1.5' }, 'High depth + constant pressure wins the ball early but leaves space in behind. Drop back is safe but invites shots.')),
+    h('div', { class: 'card' },
+      h('div', { class: 'card-head' }, h('div', { class: 'card-title' }, '⚔️ Offensive'), h('div', { class: 'card-sub' }, 'how your team attacks')),
+      segRow('Build up play', BUILDUP_STYLES, t.buildUp, v => t.buildUp = v),
+      segRow('Chance creation', CHANCE_STYLES, t.chance, v => t.chance = v),
+      sliderRow('Attacking width', 1, 10, t.widthAtt, v => t.widthAtt = v),
+      sliderRow('Players in box', 1, 10, t.box, v => t.box = v),
+      sliderRow('Corners & free kicks', 1, 5, t.setp, v => t.setp = v),
+      h('div', { class: 'card-sub', style: 'line-height:1.5' }, 'Committing bodies forward and loading the box raises your ceiling — and your exposure to counters.')),
   ));
   return wrap;
 }
@@ -326,7 +363,10 @@ function devTab(G, club) {
 
 // ================= TRANSFERS =================
 let trTab = 'search';
-let trQuery = { name: '', pos: 'ALL', ageMin: 16, ageMax: 40, ovrMin: 0, ovrMax: 99, league: 'ALL' };
+let trQuery = {
+  name: '', pos: 'ALL', ageMin: 16, ageMax: 45, ovrMin: 0, ovrMax: 99, potMin: 0,
+  league: 'ALL', nat: '', valMax: 0, wageMax: 0, avail: 'any', sort: 'ovr',
+};
 export function renderTransfers(G) {
   const root = h('div');
   const club = userClub(G);
@@ -349,21 +389,29 @@ export function renderTransfers(G) {
 
 function searchTab(G) {
   const wrap = h('div');
+  const fldSel = (label, opts, cur, cb) => h('div', null, h('label', { class: 'fld' }, label),
+    h('select', { onchange: e => cb(e.target.value) }, ...opts.map(([k, l]) => h('option', { value: k, selected: String(cur) === String(k) }, l))));
+  const fldNum = (label, min, max, cur, cb, placeholder) => h('div', null, h('label', { class: 'fld' }, label),
+    h('input', { type: 'number', min, max, value: cur, placeholder: placeholder || '', onchange: e => { const v = e.target.value === '' ? min : Number(e.target.value); cb(v); } }));
   const filters = h('div', { class: 'card', style: 'margin-bottom:12px' },
     h('div', { class: 'frow' },
       h('div', null, h('label', { class: 'fld' }, 'Name'), h('input', { type: 'text', value: trQuery.name, oninput: e => { trQuery.name = e.target.value; }, placeholder: 'Search players…' })),
-      h('div', null, h('label', { class: 'fld' }, 'Position'),
-        h('select', { onchange: e => { trQuery.pos = e.target.value; } },
-          ...[['ALL', 'Any'], ['GK', 'GK'], ['D', 'Defence'], ['M', 'Midfield'], ['A', 'Attack'], ...POSITIONS.map(p => [p, p])].map(([k, l]) => h('option', { value: k, selected: trQuery.pos === k }, l)))),
-      h('div', null, h('label', { class: 'fld' }, 'League'),
-        h('select', { onchange: e => { trQuery.league = e.target.value; } },
-          h('option', { value: 'ALL', selected: trQuery.league === 'ALL' }, 'Any league'),
-          ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: trQuery.league === l.id }, l.name)))),
-      h('div', null, h('label', { class: 'fld' }, 'OVR min'), h('input', { type: 'number', min: 0, max: 99, value: trQuery.ovrMin, onchange: e => { trQuery.ovrMin = Number(e.target.value); } })),
-      h('div', null, h('label', { class: 'fld' }, 'OVR max'), h('input', { type: 'number', min: 0, max: 99, value: trQuery.ovrMax, onchange: e => { trQuery.ovrMax = Number(e.target.value); } })),
-      h('div', null, h('label', { class: 'fld' }, 'Age max'), h('input', { type: 'number', min: 16, max: 45, value: trQuery.ageMax, onchange: e => { trQuery.ageMax = Number(e.target.value); } })),
+      fldSel('Position', [['ALL', 'Any'], ['GK', 'Goalkeepers'], ['D', 'Defenders'], ['M', 'Midfielders'], ['A', 'Attackers'], ...POSITIONS.map(p => [p, p])], trQuery.pos, v => trQuery.pos = v),
+      fldSel('League', [['ALL', 'Any league'], ...leagueDisplayList().map(l => [l.id, l.name])], trQuery.league, v => trQuery.league = v),
+      h('div', null, h('label', { class: 'fld' }, 'Nationality'), h('input', { type: 'text', value: trQuery.nat, oninput: e => { trQuery.nat = e.target.value; }, placeholder: 'e.g. BRA / France…' })),
     ),
-    h('button', { class: 'btn btn-primary', onclick: () => { applySearch(G, wrap); } }, '🔍 Search'),
+    h('div', { class: 'frow' },
+      fldSel('Age', [[0, 'Any'], [21, 'U21'], [23, 'U23'], [28, '28 or under'], [31, '31 or under']], trQuery.ageMax === 45 ? 0 : trQuery.ageMax === 21 ? 21 : trQuery.ageMax === 23 ? 23 : trQuery.ageMax === 28 ? 28 : trQuery.ageMax === 31 ? 31 : 0, v => { const n = Number(v); trQuery.ageMax = n || 45; }),
+      fldNum('Min OVR', 0, 99, trQuery.ovrMin, v => trQuery.ovrMin = v, 'e.g. 75'),
+      fldNum('Max OVR', 0, 99, trQuery.ovrMax === 99 ? '' : trQuery.ovrMax, v => trQuery.ovrMax = v === 0 ? 99 : v, 'e.g. 82'),
+      fldNum('Min POT', 0, 99, trQuery.potMin, v => trQuery.potMin = v, 'e.g. 85'),
+      fldSel('Max value (€M)', [[0, 'Any'], [5, '≤ €5M'], [15, '≤ €15M'], [30, '≤ €30M'], [60, '≤ €60M'], [120, '≤ €120M']], trQuery.valMax, v => trQuery.valMax = Number(v)),
+      fldSel('Availability', [['any', 'Any'], ['free', 'Free agents'], ['expiring', 'Contract expiring (≤1y)'], ['cheap', 'Bargains (≤ €8M)']], trQuery.avail, v => trQuery.avail = v),
+      fldSel('Sort by', [['ovr', 'Rating ↓'], ['pot', 'Potential ↓'], ['value', 'Value ↓'], ['valueAsc', 'Value ↑'], ['ageAsc', 'Age ↑'], ['ageDesc', 'Age ↓'], ['wageAsc', 'Wage ↑'], ['wage', 'Wage ↓']], trQuery.sort, v => trQuery.sort = v),
+    ),
+    h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px' },
+      h('button', { class: 'btn btn-primary', onclick: () => { applySearch(G, wrap); } }, '🔍 Search'),
+      h('button', { class: 'btn btn-ghost btn-sm', onclick: () => { trQuery = { name: '', pos: 'ALL', ageMin: 16, ageMax: 45, ovrMin: 0, ovrMax: 99, potMin: 0, league: 'ALL', nat: '', valMax: 0, wageMax: 0, avail: 'any', sort: 'ovr' }; rerender(); } }, 'Reset')),
   );
   wrap.append(filters);
   const results = h('div');
@@ -374,7 +422,7 @@ function applySearch(G, wrap) {
   const results = wrap.querySelector('.search-results') || (() => { const el = h('div', { class: 'search-results' }); wrap.append(el); return el; })();
   results.innerHTML = '';
   const q = trQuery;
-  const club = userClub(G);
+  const natQ = (q.nat || '').trim().toLowerCase();
   const out = [];
   for (const p of G.world.players.values()) {
     if (p.retired) continue;
@@ -385,18 +433,34 @@ function applySearch(G, wrap) {
     }
     const eff = p.ovr + p.gr;
     if (eff < q.ovrMin || eff > q.ovrMax) continue;
+    if (p.pot < q.potMin) continue;
     if (p.age > q.ageMax) continue;
-    if (q.league !== 'ALL') {
-      const c = p.clubId ? G.world.clubs.get(p.clubId) : null;
-      if (!c || c.league !== q.league) continue;
-    }
+    if (natQ && !p.nat.toLowerCase().includes(natQ) && !(NAT_NAME[p.nat] || '').toLowerCase().includes(natQ)) continue;
+    const c = p.clubId ? G.world.clubs.get(p.clubId) : null;
+    if (q.league !== 'ALL' && (!c || c.league !== q.league)) continue;
+    const val = playerValue(p, G.world); // €M
+    if (q.valMax > 0 && val > q.valMax) continue;
+    if (q.avail === 'free' && p.clubId) continue;
+    if (q.avail === 'expiring' && !(p.ctr && p.ctr.y <= 1)) continue;
+    if (q.avail === 'cheap' && val > 8) continue;
     out.push(p);
-    if (out.length > 400) break;
   }
-  out.sort((a, b) => (b.ovr + b.gr) - (a.ovr + a.gr));
+  const sorters = {
+    ovr: (a, b) => (b.ovr + b.gr) - (a.ovr + a.gr),
+    pot: (a, b) => b.pot - a.pot,
+    value: (a, b) => playerValue(b, G.world) - playerValue(a, G.world),
+    valueAsc: (a, b) => playerValue(a, G.world) - playerValue(b, G.world),
+    ageAsc: (a, b) => a.age - b.age,
+    ageDesc: (a, b) => b.age - a.age,
+    wageAsc: (a, b) => a.ctr.w - b.ctr.w,
+    wage: (a, b) => b.ctr.w - a.ctr.w,
+  };
+  out.sort(sorters[q.sort] || sorters.ovr);
+  const total = out.length;
   const tbl = h('div', { class: 'card tbl-wrap' },
+    h('div', { class: 'card-sub', style: 'margin-bottom:10px' }, total ? `✔ ${total.toLocaleString('en-GB')} player${total === 1 ? '' : 's'} found${total > 250 ? ' — showing top 250' : ''}` : 'No players match those filters.'),
     h('table', { class: 'tbl' },
-      h('thead', null, h('tr', null, ...[['', ''], ['Player'], ['Age'], ['Nat'], ['Club'], ['Pos'], ['OVR'], ['POT'], ['Value'], ['Wage'], ['', '']].map(([x]) => h('th', null, x)))),
+      h('thead', null, h('tr', null, ...[['', ''], ['Player'], ['Age'], ['Nat'], ['Club'], ['Pos'], ['OVR'], ['POT'], ['Value'], ['Wage'], ['Ctr'], ['', '']].map(([x]) => h('th', null, x)))),
       h('tbody', null, ...out.slice(0, 250).map(p => {
         const c = p.clubId ? G.world.clubs.get(p.clubId) : null;
         const k = knownOf(G, p.id);
@@ -412,6 +476,7 @@ function applySearch(G, wrap) {
           h('td', { class: 'num' }, k && !k.exact ? `${k.pot[0]}–${k.pot[1]}` : p.pot),
           h('td', { class: 'num' }, fmtMoney(playerValue(p, G.world) * 1e6)),
           h('td', { class: 'num' }, fmtWage(p.ctr.w)),
+          h('td', { class: 'num' }, p.clubId ? (p.ctr.y <= 1 ? '⚠️ ' : '') + p.ctr.y + 'y' : '—'),
           h('td', null, h('button', { class: 'btn btn-sm', onclick: e => { e.stopPropagation(); showPlayerModal(G, p.id); } }, 'View')),
         );
       }))));
@@ -634,7 +699,7 @@ function leagueTab(G) {
   const wrap = h('div');
   wrap.append(h('div', { class: 'comp-sel', style: 'max-width:340px;margin-bottom:10px' },
     h('select', { style: 'width:auto', onchange: e => { seasonLeague = e.target.value; rerender(); } },
-      ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === seasonLeague }, l.name))),
+      ...leagueDisplayList().map(l => h('option', { value: l.id, selected: l.id === seasonLeague }, l.name))),
     compLogoEl(seasonLeague, 26)));
   const t = tableSorted(G, seasonLeague);
   const lg = LEAGUES[seasonLeague];

@@ -24,12 +24,68 @@ export function effOvr(p) {
 // G.user.tact was written and club.tact (the AI setup) silently kept winning.
 export function applyUserTact(G) {
   const c = G.user.clubId ? G.world.clubs.get(G.user.clubId) : null;
-  if (c && G.user.tact) c.tact = { formation: G.user.tact.formation, mentality: G.user.tact.mentality, press: G.user.tact.press, style: G.user.tact.style };
+  if (c && G.user.tact) c.tact = { ...TACT_DEFAULTS, ...G.user.tact };
+}
+
+// ---------- team instructions (EAFC-style tactics) ----------
+// Defaults are neutral — AI clubs mostly run {formation, mentality} only, so
+// they get no modifiers. The user's custom instructions genuinely move results.
+export const TACT_DEFAULTS = {
+  formation: '4-3-3 Holding', mentality: 3,
+  defStyle: 'balanced', widthDef: 5, depth: 5,
+  buildUp: 'balanced', chance: 'balanced', widthAtt: 5, box: 5, setp: 3,
+};
+export const DEF_STYLES = [
+  ['drop', 'Drop Back'], ['balanced', 'Balanced'], ['press', 'Press After Loss'], ['constant', 'Constant Pressure'],
+];
+export const BUILDUP_STYLES = [
+  ['slow', 'Slow Build Up'], ['balanced', 'Balanced'], ['longball', 'Long Ball'], ['fast', 'Fast Build Up'],
+];
+export const CHANCE_STYLES = [
+  ['possession', 'Possession'], ['balanced', 'Balanced'], ['direct', 'Direct Passing'], ['runs', 'Forward Runs'],
+];
+
+// tactical instruction set -> quality multipliers (att/mid/def).
+// Magnitudes are deliberately modest (max swing ~ ±10%) but stack meaningfully.
+export function tactMods(tact) {
+  const t = { ...TACT_DEFAULTS, ...(tact || {}) };
+  const m = { att: 1, mid: 1, def: 1 };
+  // defensive style
+  if (t.defStyle === 'drop') { m.def += 0.05; m.att -= 0.03; }
+  else if (t.defStyle === 'press') { m.mid += 0.04; m.def -= 0.02; }
+  else if (t.defStyle === 'constant') { m.mid += 0.06; m.att += 0.02; m.def -= 0.06; }
+  // depth: high line suffocates but risks exposure; low block the reverse
+  const dp = (t.depth - 5) / 5; // -0.8..1.0
+  m.def -= 0.05 * dp; m.att += 0.03 * dp;
+  // defensive width: narrow protects the middle, wide hurts the centre
+  const wd = (t.widthDef - 5) / 5;
+  m.def += 0.02 * -wd; m.mid += 0.015 * -wd;
+  // build-up
+  if (t.buildUp === 'slow') { m.mid += 0.04; m.att -= 0.02; }
+  else if (t.buildUp === 'longball') { m.att += 0.025; m.mid -= 0.03; }
+  else if (t.buildUp === 'fast') { m.att += 0.035; m.mid -= 0.02; m.def -= 0.02; }
+  // chance creation
+  if (t.chance === 'possession') { m.mid += 0.03; m.att -= 0.01; }
+  else if (t.chance === 'direct') { m.att += 0.02; m.mid -= 0.01; }
+  else if (t.chance === 'runs') { m.att += 0.03; m.mid -= 0.02; }
+  // attacking width: wide stretches play; narrow overloads the middle
+  const wa = (t.widthAtt - 5) / 5;
+  m.att += 0.025 * wa; m.mid += 0.02 * -wa;
+  // players in box + set-piece commitment: more bodies forward = goals & risk
+  const bx = (t.box - 5) / 5, sp = (t.setp - 3) / 2;
+  m.att += 0.03 * bx; m.def -= 0.03 * bx;
+  m.att += 0.02 * sp; m.def -= 0.015 * sp;
+  return m;
+}
+
+// squad members usable on matchday (fit, registered, not away on loan)
+export function playersAvailable(club, world) {
+  return (club.squad || []).map(id => world.players.get(id)).filter(p => p && !p.retired && !p.inj && p.sus <= 0 && !p.loan);
 }
 
 // pick the XI + bench for a club
 export function teamSheet(club, world, opts = {}) {
-  const players = (club.squad || []).map(id => world.players.get(id)).filter(p => p && !p.retired && !p.inj && p.sus <= 0 && !p.loan);
+  const players = playersAvailable(club, world);
   const tact = opts.tact || club.tact || { formation: '4-3-3 Holding', mentality: 3 };
   const xiOver = opts.xi || club.xi || {};
   const slots = FORMATIONS[tact.formation] || FORMATIONS['4-3-3 Holding'];
@@ -114,8 +170,22 @@ export function swapSheetPlayers(G, club, aPid, bPid) {
   const aSlot = cur.xi.find(x => x.pid === aPid)?.slot || null;
   const bSlot = cur.xi.find(x => x.pid === bPid)?.slot || null;
   const aBench = cur.bench.indexOf(aPid), bBench = cur.bench.indexOf(bPid);
-  if (aSlot == null && aBench < 0) return false;
-  if (bSlot == null && bBench < 0) return false;
+  // reserves: available squad members outside XI + bench
+  const avail = new Set(playersAvailable(club, world).map(p => p.id));
+  for (const x of cur.xi) avail.delete(x.pid);
+  for (const b of cur.bench) avail.delete(b);
+  const aRes = avail.has(aPid), bRes = avail.has(bPid);
+  if (aSlot == null && aBench < 0 && !aRes) return false;
+  if (bSlot == null && bBench < 0 && !bRes) return false;
+  // bench ↔ reserve: pure bench-set change, XI untouched
+  if (aSlot == null && bSlot == null && (aRes || bRes)) {
+    const bench = cur.bench.slice();
+    const iB = bench.indexOf(aRes ? bPid : aPid);
+    if (iB < 0) return false;
+    bench[iB] = aRes ? aPid : bPid;
+    recomputeBenchOverride(G, club, bench);
+    return true;
+  }
   if (aSlot == null && bSlot == null) return false; // both on bench — order swap is cosmetic, skip
   // desired XI map after the swap
   const map = Object.fromEntries(cur.xi.map(x => [x.slot, x.pid]));
@@ -128,12 +198,15 @@ export function swapSheetPlayers(G, club, aPid, bPid) {
   const ov = {};
   for (const s of slots) if (map[s] !== auto[s]) ov[s] = map[s];
   if (Object.keys(ov).length) G.user.xiOverrides = ov; else delete G.user.xiOverrides;
-  // desired bench set after the swap
+  // desired bench set after the swap (only recompute if somebody actually moved)
   const bench = cur.bench.slice();
   const ia = bench.indexOf(aPid), ib = bench.indexOf(bPid);
-  if (ia >= 0 && aSlot) bench[ia] = bPid;
-  if (ib >= 0 && bSlot) bench[ib] = aPid;
-  recomputeBenchOverride(G, club, bench);
+  let benchChanged = false;
+  if (ia >= 0 && aSlot) { bench[ia] = bPid; benchChanged = true; }
+  if (ib >= 0 && bSlot) { bench[ib] = aPid; benchChanged = true; }
+  if (bRes) { // reserve coming straight into XI: bench falls back to auto-pick
+    delete G.user.benchOverride;
+  } else if (benchChanged) recomputeBenchOverride(G, club, bench);
   return true;
 }
 
@@ -197,6 +270,10 @@ export function fullSim(match, world, seed) {
   const as = teamSheet(ac, world);
   const hq = teamQuality(hs, world, hs.tact.mentality);
   const aq = teamQuality(as, world, as.tact.mentality);
+  // custom manager instructions genuinely tilt the game
+  const hm = tactMods(hs.tact), am = tactMods(as.tact);
+  hq.att *= hm.att; hq.mid *= hm.mid; hq.def *= hm.def;
+  aq.att *= am.att; aq.mid *= am.mid; aq.def *= am.def;
   const ub = match.bonus || 0;
   if (match.userHome === true) { hq.att += ub * 6; hq.mid += ub * 6; hq.def += ub * 6; hq.gk += ub * 6; }
   else if (match.userHome === false) { aq.att += ub * 6; aq.mid += ub * 6; aq.def += ub * 6; aq.gk += ub * 6; }
@@ -438,6 +515,10 @@ export function quickSim(match, world, seed) {
   const as = teamSheet(ac, world);
   const hq = teamQuality(hs, world, hs.tact.mentality);
   const aq = teamQuality(as, world, as.tact.mentality);
+  // custom manager instructions genuinely tilt the game
+  const hm = tactMods(hs.tact), am = tactMods(as.tact);
+  hq.att *= hm.att; hq.mid *= hm.mid; hq.def *= hm.def;
+  aq.att *= am.att; aq.mid *= am.mid; aq.def *= am.def;
   const diff = (hq.ovr - aq.ovr) + (hc.rep - ac.rep) * 0.12 + 1.6;
   let lh = clamp(1.25 * Math.pow(10, diff / 26), 0.15, 6);
   let la = clamp(1.25 * Math.pow(10, -diff / 26), 0.15, 6);

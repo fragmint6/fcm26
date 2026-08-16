@@ -4,7 +4,7 @@
 // an editable bench, and captain / set-piece assignment cards with real faces.
 import { h, esc, modal, FORMATIONS, MENTALITIES, SLOT_AFF, SLOT_LABEL } from '../util.js';
 import { derivedAtts } from '../data/worldgen.js';
-import { teamSheet, effOvr, setSlotOverride, pruneSlotOverrides, swapSheetPlayers, recomputeBenchOverride, applyUserTact } from '../engine/match.js';
+import { teamSheet, effOvr, setSlotOverride, pruneSlotOverrides, swapSheetPlayers, recomputeBenchOverride, applyUserTact, playersAvailable } from '../engine/match.js';
 import { playerFaceEl, crestEl, compLogoEl } from './ui.js';
 
 const COORDS = {
@@ -114,7 +114,11 @@ export function teamSheetEditor(G, club, opts = {}) {
       if (el) el.classList.add('sel');
     }
     const hint = wrap.querySelector('.ts-hint');
-    if (hint) hint.textContent = sel ? 'Now tap another player — on the pitch or the bench — to swap them.' : 'Tap a player card, then another, to swap positions or make a substitution. Tap a pitch player twice for the shortlist.';
+    if (hint) hint.textContent = hintText();
+  }
+  function hintText() {
+    if (sel) return 'Now tap the player to swap with — anyone on the pitch, the bench or in the reserves.';
+    return 'Tap two players to swap them — XI, bench and reserves are all swappable. Double-tap a pitch player to open the full squad shortlist.';
   }
   // classic list picker for a slot (precision picking, unpin, etc.)
   function slotChoices(slot) {
@@ -212,11 +216,15 @@ export function teamSheetEditor(G, club, opts = {}) {
     });
   }
 
-  // ---------- bench ----------
+  // ---------- bench + reserves ----------
   function benchTray(sheet) {
     const card = h('div', { class: 'card ts-benchcard' });
+    const inSheet = new Set([...sheet.xi.map(x => x.pid), ...sheet.bench]);
+    const reserves = playersAvailable(club, G.world)
+      .filter(p => !inSheet.has(p.id))
+      .sort((a, b) => effOvr(b) - effOvr(a));
     card.append(h('div', { class: 'card-head' },
-      h('div', { class: 'card-title' }, 'Substitutes'),
+      h('div', { class: 'card-title' }, `Substitutes · ${sheet.bench.length}`),
       h('div', { class: 'card-sub' }, G.user.benchOverride ? 'custom bench' : 'auto bench')));
     const row = h('div', { class: 'ts-bench' });
     for (const pid of sheet.bench) {
@@ -225,6 +233,14 @@ export function teamSheetEditor(G, club, opts = {}) {
       row.append(playerCardEl(p, null, false));
     }
     card.append(row);
+    if (reserves.length) {
+      card.append(h('div', { class: 'ts-res-head' },
+        h('div', { class: 'card-title' }, `Reserves · ${reserves.length}`),
+        h('div', { class: 'card-sub' }, 'tap a reserve, then an XI / bench player to swap them in')));
+      const rrow = h('div', { class: 'ts-reserves' });
+      for (const p of reserves) rrow.append(playerCardEl(p, null, false));
+      card.append(rrow);
+    }
     if (!readonly) {
       card.append(h('div', { class: 'chip-row', style: 'margin-top:10px' },
         h('button', { class: 'btn btn-sm btn-ghost', onclick: () => { delete G.user.xiOverrides; changed(); } }, '↺ Auto XI'),
@@ -234,7 +250,6 @@ export function teamSheetEditor(G, club, opts = {}) {
     return card;
   }
   function hintBar() {
-    return readonly ? h('div') : h('div', { class: 'screen-sub ts-hint' },
-      sel ? 'Now tap another player — on the pitch or the bench — to swap them.' : 'Tap a player card, then another, to swap positions or make a substitution. Tap a pitch player twice for the shortlist.');
+    return readonly ? h('div') : h('div', { class: 'screen-sub ts-hint' }, hintText());
   }
 }

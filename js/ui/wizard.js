@@ -1,6 +1,6 @@
 // ============ FCM 26 — title screen & new career wizard ============
 import { h, esc, fmtMoney, flag, NAT_NAME, toast, modal, FORMATIONS, $ } from '../util.js';
-import { LEAGUES, CLUBS } from '../data/clubs.js';
+import { LEAGUES, CLUBS, leagueDisplayList } from '../data/clubs.js';
 import { newGame, loadGame, loadSaves } from '../state.js';
 import { crestEl, compLogoEl, compNameEl } from './ui.js';
 
@@ -62,7 +62,7 @@ export function startWizard(onStart) {
         h('div', null, h('label', { class: 'fld' }, 'League'),
           h('div', { class: 'comp-sel' },
             h('select', { id: 'wiz-league-sel', onchange: e => { st.league = e.target.value; syncLeagueLogo(); drawClubs(); } },
-              ...Object.values(LEAGUES).map(l => h('option', { value: l.id, selected: l.id === st.league }, l.name))),
+              ...leagueDisplayList().map(l => h('option', { value: l.id, selected: l.id === st.league }, `${l.name} — ${l.country}`))),
             h('span', { id: 'wiz-league-logo' }))),
         h('div', null, h('label', { class: 'fld' }, 'Search'), h('input', { type: 'text', placeholder: 'Club name…', oninput: e => drawClubs(e.target.value.toLowerCase()) })),
       ),

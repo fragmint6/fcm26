@@ -8,7 +8,7 @@ import { totalWages } from './engine/market.js';
 import { hashStr, RNG, clamp, fmtDate, fmtMoney } from './util.js';
 import { applyImportedPlayer } from './engine/import.js';
 import { prepareWorldWithBundle, trimSquads } from './engine/worldextend.js';
-import { applyUserTact } from './engine/match.js';
+import { applyUserTact, TACT_DEFAULTS } from './engine/match.js';
 
 // ---- EAFC database bundle (js/data/import_bundle.js, built from uploads/*.csv) ----
 let bundlePromise = null;
@@ -48,7 +48,7 @@ export async function newGame(opts) {
   };
   G.user = {
     clubId: opts.clubId, ntJob: null,
-    tact: { formation: opts.formation || '4-3-3 Holding', mentality: 3, press: 'balanced', style: opts.style || 'Balanced' },
+    tact: { ...TACT_DEFAULTS, formation: opts.formation || TACT_DEFAULTS.formation, style: opts.style || 'Balanced' },
     kickers: { pen: null, fk: null, cor: null }, captain: null,
     shortlist: [], challenges: [],
   };

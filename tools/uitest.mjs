@@ -136,6 +136,20 @@ step('squad > sheet pickers', () => {
   if (!G.user.xiOverrides || !Object.keys(G.user.xiOverrides).length) throw new Error('swap produced no XI override');
   // formation must have synced to the world club
   if (userClub(G).tact.formation !== G.user.tact.formation) throw new Error('user formation not synced to club');
+  // reserves tray must exist and be swappable: reserve → XI
+  const resCards = () => [...content.querySelectorAll('.ts-reserves .tcard')];
+  if (!resCards().length) throw new Error('no reserves rendered in team sheet');
+  delete G.user.xiOverrides; delete G.user.benchOverride;
+  const res = resCards()[0];
+  const xiTarget = [...content.querySelectorAll('.tspitch .tcard')][5];
+  res.click(); xiTarget.click();
+  if (!G.user.xiOverrides || !Object.keys(G.user.xiOverrides).length) throw new Error('reserve→XI swap produced no override');
+  // bench ↔ reserve swap should pin a custom bench
+  const res2 = [...content.querySelectorAll('.ts-reserves .tcard')];
+  if (!res2.length) throw new Error('reserves vanished after reserve promotion');
+  const benchRow = [...content.querySelectorAll('.ts-bench .tcard')];
+  res2[0].click(); benchRow[benchRow.length - 1].click();
+  if (!G.user.benchOverride || G.user.benchOverride.length !== 7) throw new Error('bench↔reserve swap produced no bench override');
   // auto XI reset clears pins again
   [...content.querySelectorAll('.ts-benchcard .btn')].find(b => b.textContent.includes('Auto XI')).click();
   if (G.user.xiOverrides && Object.keys(G.user.xiOverrides).length) throw new Error('Auto XI did not clear overrides');
