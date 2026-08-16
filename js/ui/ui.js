@@ -5,9 +5,8 @@ import { BADGE_REMOTE } from '../data/badges_remote.js';
 
 // ---------- club crests ----------
 // Badge fallback chain per club:
-//   1. local override PNG at assets/badges/<CLUBID>.{png,webp,jpg,jpeg}
-//   2. remote 256px crest from football-logos.cc (js/data/badges_remote.js, 788 clubs)
-//   3. generated stylized SVG (original vectors, always works offline)
+//   1. remote 256px crest from football-logos.cc (js/data/badges_remote.js, 788 clubs)
+//   2. generated stylized SVG (original vectors, always works offline)
 const badgeCache = new Map(); // clubId -> resolved URL string, or 'gen'
 const SHIELD_PATHS = {
   0: 'M4 6 C4 3 8 2 12 2 C16 2 20 3 20 6 L20 14 C20 20 16 22 12 22 C8 22 4 20 4 14 Z',
@@ -41,7 +40,6 @@ export function crestSVG(club, size = 40) {
     <text x="12" y="${hsh % 2 === 0 ? 15.5 : 16}" text-anchor="middle" font-size="${fs}" font-weight="900" font-family="Segoe UI, sans-serif" fill="${c2}" stroke="${c1}" stroke-width=".5">${esc(mono)}</text>
   </svg>`;
 }
-const BADGE_EXTS = ['png', 'webp', 'jpg', 'jpeg'];
 export function crestEl(club, size = 22, cls = '') {
   const el = h('span', { class: `crest ${cls}` });
   el.style.width = size + 'px'; el.style.height = size + 'px';
@@ -52,25 +50,15 @@ export function crestEl(club, size = 22, cls = '') {
   };
   const cached = badgeCache.get(club.id);
   if (cached === 'gen') { el.innerHTML = crestSVG(club, size); return el; }
-  const candidates = typeof cached === 'string'
-    ? [cached]
-    : [
-        ...BADGE_EXTS.map(ext => `assets/badges/${club.id}.${ext}`),
-        BADGE_REMOTE[club.id],
-      ].filter(Boolean);
-  if (!candidates.length) { el.innerHTML = crestSVG(club, size); return el; }
-  let i = 0;
+  const src = typeof cached === 'string' ? cached : BADGE_REMOTE[club.id];
+  if (!src) { el.innerHTML = crestSVG(club, size); return el; }
   const img = document.createElement('img');
   img.alt = '';
   img.loading = 'lazy';
   img.decoding = 'async';
   img.referrerPolicy = 'no-referrer';
   img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
-  const next = () => {
-    if (i < candidates.length) img.src = candidates[i++];
-    else gen();
-  };
-  img.addEventListener('error', next);
+  img.addEventListener('error', gen);
   img.addEventListener('load', () => {
     badgeCache.set(club.id, img.src);
     // real crests ship on mixed backgrounds — seat them on a uniform light chip
@@ -78,7 +66,7 @@ export function crestEl(club, size = 22, cls = '') {
     const pad = Math.max(1, Math.round(size * .09));
     img.style.padding = pad + 'px';
   });
-  next();
+  img.src = src;
   el.append(img);
   return el;
 }

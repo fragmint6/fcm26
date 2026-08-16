@@ -1043,12 +1043,12 @@ export function renderSettings(G) {
     h('div', { class: 'card-title', style: 'margin-bottom:8px' }, '🖼️ Custom artwork'),
     h('p', { class: 'screen-sub', style: 'line-height:1.5' }, 'Drop your own images into the workspace and the game uses them automatically, falling back to generated art:'),
     h('ul', { class: 'screen-sub', style: 'margin:8px 0 0 18px;line-height:1.7' },
-      h('li', null, 'Club badges → assets/badges/<CLUBID>.png — e.g. assets/badges/ARS.png'),
+      h('li', null, 'Club badges → real crests loaded from football-logos.cc (built in for 788 clubs); the rest use generated crests'),
       h('li', null, 'Player photos → assets/faces/<name>.png — e.g. assets/faces/Bukayo Saka.png')),
   ));
   root.append(h('div', { class: 'card' },
     h('div', { class: 'card-title', style: 'margin-bottom:8px' }, 'About'),
-    h('p', { class: 'screen-sub', style: 'line-height:1.6' }, 'FCM 26 is a fan-made football management career game inspired by EA Sports FC manager career. Player & club names are factual; ratings derive from the public 2026 player database. Real club badges are shown where available; remaining crests and all player portraits are original generated artwork. Matches are simulated — you manage everything else.'),
+    h('p', { class: 'screen-sub', style: 'line-height:1.6' }, 'FCM 26 is a fan-made football management career game inspired by EA Sports FC manager career. Player & club names are factual; ratings derive from the public 2026 player database. Club crests courtesy of football-logos.cc; uncovered clubs and all player portraits use original generated artwork. Matches are simulated — you manage everything else.'),
   ));
   return root;
 }
