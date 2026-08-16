@@ -37,7 +37,9 @@ export function teamSheet(club, world, opts = {}) {
     let best = null, bestScore = -999;
     if (xiOver[slot]) {
       const p = players.find(x => x.id === xiOver[slot]);
-      if (p) { used.add(p.id); xi.push({ slot, pid: p.id }); continue; }
+      // guard: ignore overrides that are stale, injured/suspended, or duplicate
+      // (same player pinned into two slots — second occurrence becomes auto)
+      if (p && !used.has(p.id)) { used.add(p.id); xi.push({ slot, pid: p.id }); continue; }
     }
     for (const p of players) {
       if (used.has(p.id)) continue;
@@ -58,6 +60,27 @@ export function teamSheet(club, world, opts = {}) {
   }
   const bench = players.filter(p => !used.has(p.id)).sort((a, b) => effOvr(b) - effOvr(a)).slice(0, 7).map(p => p.id);
   return { xi, bench, tact };
+}
+
+// ---------- manual XI overrides ----------
+// pid === current pin at that slot (or null) -> un-pin, back to auto.
+// Pinning a player who's pinned elsewhere MOVES him (never two dots).
+// Slots not in the current formation are pruned as stale.
+export function setSlotOverride(G, slot, pid) {
+  const ov = G.user.xiOverrides || (G.user.xiOverrides = {});
+  if (!pid || ov[slot] === pid) delete ov[slot];
+  else {
+    for (const s of Object.keys(ov)) if (s !== slot && ov[s] === pid) delete ov[s];
+    ov[slot] = pid;
+  }
+  pruneSlotOverrides(G);
+}
+export function pruneSlotOverrides(G) {
+  const ov = G.user.xiOverrides;
+  if (!ov) return;
+  const slots = FORMATIONS[(G.user.tact && G.user.tact.formation)] || [];
+  for (const s of Object.keys(ov)) if (!slots.includes(s)) delete ov[s];
+  if (!Object.keys(ov).length) delete G.user.xiOverrides;
 }
 
 export function teamQuality(sheet, world, mentality = 3) {

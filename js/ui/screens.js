@@ -4,7 +4,7 @@ import { LEAGUES, CUPS, UEFA } from '../data/clubs.js';
 import { tableSorted, clubsInLeague } from '../engine/schedule.js';
 import { isUserMatch, compLabel } from '../engine/advance.js';
 import { playerValue, wageAsk, askPrice, aiSellResponse, playerContractResponse, executeUserBuy, executeUserLoanIn, respondOffer, listPlayer, unlistPlayer, releasePlayer, renewContract, totalWages } from '../engine/market.js';
-import { effOvr, teamSheet, teamQuality } from '../engine/match.js';
+import { effOvr, teamSheet, teamQuality, setSlotOverride, pruneSlotOverrides } from '../engine/match.js';
 import { knownOf } from '../engine/scouting.js';
 import { expPos, genObjectives } from '../engine/board.js';
 import { promoteYouth } from '../engine/growth.js';
@@ -277,7 +277,7 @@ function tacticsTab(G, club) {
   const grid = h('div', { class: 'grid', style: 'grid-template-columns:repeat(auto-fill,minmax(200px,1fr))' });
   for (const f of Object.keys(FORMATIONS)) {
     const el = h('div', { class: `card${G.user.tact.formation === f ? ' sel-highlight' : ''}`, style: 'cursor:pointer;text-align:center' });
-    el.addEventListener('click', () => { G.user.tact.formation = f; rerender(); });
+    el.addEventListener('click', () => { G.user.tact.formation = f; pruneSlotOverrides(G); rerender(); });
     el.append(h('div', { style: 'font-weight:800;font-size:13px;margin-bottom:6px' }, f), miniPitchEl(f));
     grid.append(el);
   }
@@ -1425,9 +1425,10 @@ function pitchEl(G, club, sheet) {
   for (const x of sheet.xi) {
     const p = G.world.players.get(x.pid);
     if (!p) continue;
+    const pinned = (G.user.xiOverrides || {})[x.slot] === p.id;
     const [top, left] = coords[x.slot] || [50, 50];
-    const dot = h('div', { class: `pdot${x.slot === 'GK' ? ' gk' : ''}`, style: `top:${top}%;left:${left}%`, title: p.name + ' (' + p.pos + ')' },
-      h('span', { style: 'font-size:9px' }, p.name.split(' ').pop().slice(0, 5).toUpperCase()));
+    const dot = h('div', { class: `pdot${x.slot === 'GK' ? ' gk' : ''}${pinned ? ' pinned' : ''}`, style: `top:${top}%;left:${left}%`, title: `${p.name} — ${p.pos} · OVR ${Math.round(effOvr(p))} · ${SLOT_LABEL[x.slot] || x.slot}${pinned ? ' (pinned — click slot to change)' : ' — click to change'}` },
+      h('span', { class: 'pdot-nm' }, p.name.split(' ').pop().slice(0, 5).toUpperCase()));
     dot.addEventListener('click', () => slotPicker(G, x.slot));
     el.append(dot);
   }
@@ -1442,17 +1443,21 @@ function slotPicker(G, slot) {
       const affA = SLOT_AFF[slot][a.pos] ?? 0, affB = SLOT_AFF[slot][b.pos] ?? 0;
       return (effOvr(b) * (0.55 + affB * 0.45)) - (effOvr(a) * (0.55 + affA * 0.45));
     });
+  const ov = G.user.xiOverrides || {};
   const m = modal({
-    title: 'Pick player for ' + slot,
-    body: h('div', null, ...players.map(p => h('div', { class: `club-pick${p.id === current ? ' sel-highlight' : ''}`, onclick: () => {
-      // override: store user XI overrides
-      G.user.xiOverrides = G.user.xiOverrides || {};
-      G.user.xiOverrides[slot] = p.id;
-      m.close();
-      rerender();
-    } },
-    h('span', { class: 'pos-chip' }, p.pos),
-    h('div', { class: 'cp-info' }, h('div', { class: 'cp-name' }, esc(p.name)), h('div', { class: 'cp-sub' }, `OVR ${Math.round(effOvr(p))} · ${p.role.label}${p.role.fam ? '+' : ''} · fit ${Math.round(p.fit)}%`)),
-    ))),
+    title: `${SLOT_LABEL[slot] || slot} — pick player`,
+    body: h('div', { style: 'max-height:55vh;overflow:auto' }, ...players.map(p => {
+      const pinnedHere = ov[slot] === p.id;
+      const pinnedAt = Object.entries(ov).find(([s, v]) => v === p.id && s !== slot)?.[0];
+      return h('div', { class: `club-pick${p.id === current ? ' sel-highlight' : ''}`, onclick: () => {
+        setSlotOverride(G, slot, p.id); // re-clicking the pinned player un-pins (auto)
+        m.close();
+        rerender();
+      } },
+      h('span', { class: 'pos-chip' }, p.pos),
+      h('div', { class: 'cp-info' }, h('div', { class: 'cp-name' }, esc(p.name)), h('div', { class: 'cp-sub' }, `OVR ${Math.round(effOvr(p))} · ${p.role.label}${p.role.fam ? '+' : ''} · fit ${Math.round(p.fit)}%`)),
+      pinnedHere ? h('span', { class: 'tag on' }, 'pinned') : pinnedAt ? h('span', { class: 'tag', title: 'Picking moves him here' }, `at ${SLOT_LABEL[pinnedAt] || pinnedAt}`) : null);
+    })),
+    footer: ov[slot] ? h('button', { class: 'btn btn-ghost', onclick: () => { setSlotOverride(G, slot, null); m.close(); rerender(); } }, '↺ Back to auto') : null,
   });
 }

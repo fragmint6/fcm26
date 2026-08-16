@@ -46,7 +46,7 @@ export function showMatchday(G) {
       h('div', { class: 'chip-row', style: 'margin-bottom:10px' }, ...MENTALITIES.map((mn, i) =>
         h('button', { class: `tab${(G.user.tact.mentality || 3) === i + 1 ? ' on' : ''}`, onclick: () => { G.user.tact.mentality = i + 1; preMatch(); } }, mn))),
       h('label', { class: 'fld' }, 'Formation'),
-      h('select', { onchange: e => { G.user.tact.formation = e.target.value; preMatch(); } },
+      h('select', { onchange: e => { G.user.tact.formation = e.target.value; pruneSlotOverrides(G); preMatch(); } },
         ...Object.keys(FORMATIONS).map(f => h('option', { value: f, selected: G.user.tact.formation === f }, f))),
     ));
     side.append(h('div', { class: 'card' },
@@ -290,21 +290,26 @@ function slotPicker(G, club, slot) {
       return (effOvr(b) * (0.55 + affB * 0.45)) - (effOvr(a) * (0.55 + affA * 0.45));
     });
   const current = teamSheet(club, G.world, { xi: G.user.xiOverrides || {} }).xi.find(x => x.slot === slot)?.pid;
+  const ov = G.user.xiOverrides || {};
   const list = h('div', { style: 'max-height:50vh;overflow:auto' });
+  let m;
   for (const p of players) {
+    const pinnedHere = ov[slot] === p.id;
+    const pinnedAt = Object.entries(ov).find(([s, v]) => v === p.id && s !== slot)?.[0];
     const row = h('div', { class: 'club-pick' + (p.id === current ? ' sel-highlight' : '') });
     row.addEventListener('click', () => {
-      G.user.xiOverrides = G.user.xiOverrides || {};
-      G.user.xiOverrides[slot] = p.id;
-      showMatchday(G);
+      setSlotOverride(G, slot, p.id); // re-click pinned = back to auto; dup picks move him
+      m.close();
+      showMatchday(G); // re-render the pre-match stage in place
     });
     row.append(
       h('span', { class: 'pos-chip' }, p.pos),
       h('div', { class: 'cp-info' },
         h('div', { class: 'cp-name' }, esc(p.name)),
         h('div', { class: 'cp-sub' }, 'OVR ' + Math.round(effOvr(p)) + ' · ' + p.role.label + (p.role.fam ? '+' : '') + ' · fit ' + Math.round(p.fit) + '%')),
-      h('b', null, Math.round(p.fit) + '%'));
+      pinnedHere ? h('span', { class: 'tag on' }, 'pinned') : pinnedAt ? h('span', { class: 'tag', title: 'Picking moves him here' }, `at ${SLOT_LABEL[pinnedAt] || pinnedAt}`) : h('b', null, Math.round(p.fit) + '%'));
     list.append(row);
   }
-  modal({ title: 'Pick player — ' + SLOT_LABEL[slot], body: list });
+  m = modal({ title: `${SLOT_LABEL[slot] || slot} — pick player`, body: list,
+    footer: ov[slot] ? h('button', { class: 'btn btn-ghost', onclick: () => { setSlotOverride(G, slot, null); m.close(); showMatchday(G); } }, '↺ Back to auto') : null });
 }
