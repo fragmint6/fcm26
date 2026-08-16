@@ -81,14 +81,14 @@ export function teamSheetEditor(G, club, opts = {}) {
     const card = h('div', { class: `tcard${slot === 'GK' ? ' tcard-gk' : ''}${sel === p.id ? ' sel' : ''}`, dataset: { pid: p.id } });
     const face = playerFaceEl(p, 46, 46);
     face.classList.add('tc-face');
-    card.append(
+    card.append(...[
       h('div', { class: `tc-ovr ${ovr >= 85 ? 'rating-85' : ovr >= 78 ? 'rating-80' : ''}` }, String(ovr)),
       face,
       h('div', { class: 'tc-name' }, esc((p.name.split(' ').pop() || p.name).toUpperCase())),
       slot ? h('div', { class: `tc-pos ${fitClass(slotFit(slot, p))}` }, SLOT_LABEL[slot] || slot) : h('div', { class: `tc-pos` }, p.pos),
       badgeStrip(p.id),
       pinned ? h('div', { class: 'tc-pin', title: 'Pinned by manager' }, '📌') : null,
-    );
+    ].filter(Boolean));
     if (!readonly) {
       card.classList.add('tclick');
       card.title = `${p.name} — ${p.pos} · OVR ${ovr} · fit ${Math.round(p.fit)}%\nClick, then click another player to swap${slot ? ' · or click again for options' : ''}`;
