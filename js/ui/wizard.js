@@ -18,13 +18,13 @@ export function startWizard(onStart) {
     root.innerHTML = '';
     root.append(
       h('div', { class: 'title-logo' }, h('span', { class: 't1' }, 'FOOTBALL '), h('span', { class: 't2' }, 'CLUB '), h('span', { class: 't3' }, 'MANAGER'), h('div', { style: 'text-align:right;font-size:34px;margin-top:-6px;color:#fff' }, '2026')),
-      h('div', { class: 'title-sub' }, 'A full football career simulation — 23 leagues, ~470 clubs, ~14,000 players, transfer markets, scouting, youth academies and live match simulation. You never kick a ball. You decide everything else.'),
+      h('div', { class: 'title-sub' }, 'A full football career simulation — 51 leagues, ~500 clubs, every single player from the real 2026 database (18,000+), transfer markets, scouting, youth academies and live match simulation. You never kick a ball. You decide everything else.'),
       h('div', { style: 'display:flex;flex-direction:column;gap:10px;min-width:260px' },
         h('button', { class: 'btn btn-primary', style: 'padding:12px 20px;font-size:15px', onclick: () => stepManager() }, '▶ NEW CAREER'),
         h('button', { class: 'btn', style: 'padding:12px 20px;font-size:15px', onclick: () => loadScreen() }, '📂 LOAD CAREER'),
         h('button', { class: 'btn btn-ghost', style: 'padding:12px 20px', onclick: () => showAbout() }, 'ℹ️ ABOUT'),
       ),
-      h('div', { class: 'title-sub', style: 'font-size:11.5px;max-width:560px' }, 'Fan-made tribute game. Club & player names are factual; all ratings are original estimates and all badges/portraits are original generated artwork. Not affiliated with EA SPORTS.'),
+      h('div', { class: 'title-sub', style: 'font-size:11.5px;max-width:560px' }, 'Fan-made tribute game. Club & player names are factual; ratings derive from the public player database. Club badges shown where available belong to their clubs; all player portraits are original generated artwork. Not affiliated with EA SPORTS.'),
     );
   }
 

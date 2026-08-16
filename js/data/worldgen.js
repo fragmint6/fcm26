@@ -170,7 +170,7 @@ export function genName(nat, rng) {
 
 const POS_NEEDS = ['GK', 'GK', 'RB', 'LB', 'CB', 'CB', 'CB', 'CB', 'CDM', 'CDM', 'CM', 'CM', 'CAM', 'RW', 'LW', 'ST', 'ST'];
 
-function genPlayerForClub(club, idx, rng, needIdx) {
+export function genPlayerForClub(club, idx, rng, needIdx) {
   const h = hashStr(club.id + '#' + idx);
   const nat = rng.chance(0.55) ? club.ctry : TOP_NATS[rng.int(TOP_NATS.length)];
   const pos = POS_NEEDS[needIdx % POS_NEEDS.length];
@@ -214,7 +214,7 @@ export function genYouth(club, idx, rng) {
   return p;
 }
 
-function genFreeAgent(idx, rng) {
+export function genFreeAgent(idx, rng) {
   const nat = TOP_NATS[rng.int(TOP_NATS.length)];
   const pos = POS_NEEDS[rng.int(POS_NEEDS.length)];
   const age = rng.intRange(20, 34);

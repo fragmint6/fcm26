@@ -2,7 +2,7 @@
 // Creates leagues and clubs that exist in the imported data but not in the base
 // game, so a full database export lands in a full football world.
 import { LEAGUES } from '../data/clubs.js';
-import { genManager } from '../data/worldgen.js';
+import { genManager, genPlayerForClub, genFreeAgent, genName } from '../data/worldgen.js';
 import { hashStr, RNG, norm, clamp } from '../util.js';
 import { applyImportBundle, resolveClubId, clubNorm, buildClubIndex } from './import.js';
 
@@ -27,8 +27,16 @@ export const LEAGUE_MAP_BY_NAME = {
   '1. Division': 'CYP1', 'Nemzeti Bajnokság I': 'HUN1', 'Veikkausliiga': 'FIN1', 'Premyer Liqa': 'AZE1',
 };
 
+// extra club-name disambiguation sets (the export mixes several leagues under one name)
+const BELGIAN_CLUBS = new Set(['oudheverlee leuven', 'union saint-gilloise', 'standard de liège', 'sint-truidense vv',
+  'fcv dender eh', 'kvc westerlo', 'cercle brugge ksv', 'royal charleroi sporting club', 'raal la louvière', 'sv zulte waregem'].map(norm));
+const ECUADOR_CLUBS = new Set(['ldu quito', 'independiente del valle', 'mushuc runa', 'barcelona de guayaquil',
+  'universidad católica del ecuador', 'barcelona sc'].map(norm));
+const SWISS_CLUBS = new Set(['fc thun', 'grasshopper club zürich', 'grasshoppers'].map(norm));
+
 // new leagues to create
 const LEAGUE_EXTRA = {
+  ECU1: { name: 'LigaPro Serie A', country: 'ECU', tier: 1, teams: 16, prizeBase: 2 },
   ENG3: { name: 'EFL League One', country: 'ENG', tier: 3, teams: 24, prizeBase: 6, proRel: { upTo: 'CHP', n: 3 } },
   ENG4: { name: 'EFL League Two', country: 'ENG', tier: 4, teams: 24, prizeBase: 4, proRel: { upTo: 'ENG3', n: 3 } },
   GER3: { name: '3. Liga', country: 'GER', tier: 3, teams: 20, prizeBase: 4, proRel: { upTo: 'BU2', n: 3 } },
@@ -58,35 +66,53 @@ const VEN_CLUBS = new Set(['deportivotachira', 'academiapuertocabello', 'caracas
 // Austrian clubs (the dataset calls both GER and AUT top flights "Bundesliga")
 const AUSTRIAN_CLUBS = new Set(['salzburg', 'redbullsalzburg', 'sturmgraz', 'rapid', 'rapidwien', 'lask', 'lasklinz', 'austriawien', 'wolfsberger', 'wolfsbergerac', 'hartberg', 'altach', 'rheindorfaltach', 'wsgtirol', 'blauweisslinz', 'blauweiss', 'klagenfurt', 'austriaklagenfurt', 'grazerak', 'gak', 'ried', 'svried']);
 // Indian Super League clubs (mixed into the dataset's "Super League" bucket)
-const INDIAN_CLUBS = new Set(['bengalurufc', 'chennaiyin', 'chennaiyinfc', 'mohunbagan', 'mohunbagansupergiant', 'eastbengal', 'eastbengalfc', 'mumbacity', 'mumbacityfc', 'fcgoa', 'keralablasters', 'keralablastersfc', 'jamshedpur', 'jamshedpurfc', 'hyderabadfc', 'odisha', 'odishafc', 'northeastunited', 'northeastunitedfc', 'punjabfc', 'roundglasspunjab', 'mohammedan', 'mohammedansc', 'isl']);
+const INDIAN_CLUBS = new Set(['bengalurufc', 'chennaiyin', 'chennaiyinfc', 'mohunbagan', 'mohunbagansupergiant', 'eastbengal', 'eastbengalfc', 'mumbacity', 'mumbacityfc', 'fcgoa', 'keralablasters', 'keralablastersfc', 'jamshedpur', 'jamshedpurfc', 'hyderabadfc', 'odisha', 'odishafc', 'northeastunited', 'northeastunitedfc', 'punjabfc', 'roundglasspunjab', 'mohammedan', 'mohammedansc', 'isl', 'unitedtigerssc', 'unitedtigers']);
 
 const PALETTE = [['#c8102e', '#ffffff'], ['#004170', '#ffffff'], ['#1a3b8f', '#ffffff'], ['#0f7a3d', '#ffffff'], ['#6c1d45', '#ffffff'], ['#fdb913', '#231f20'], ['#000000', '#ffffff'], ['#f77f00', '#ffffff'], ['#7a263a', '#ffffff'], ['#003da5', '#ffffff'], ['#007a33', '#ffffff'], ['#e30613', '#ffffff']];
+
+function leagueViaExisting(G, data, idx) {
+  const existing = resolveClubId(G, data.club, data.slug, idx);
+  if (!existing) return null;
+  const c = G.world.clubs.get(existing);
+  return c ? c.league : null;
+}
 
 export function leagueIdFor(G, data, idx) {
   if (!data.league) return data.fa ? null : null;
   const mapped = LEAGUE_MAP_BY_NAME[data.league];
   if (!mapped) return null;
-  // mixed-league splits: check if the club already exists in the world
-  if (data.league === 'Super League' || data.league === 'Pro League') {
-    const existing = resolveClubId(G, data.club, data.slug, idx);
-    if (existing) {
-      const c = G.world.clubs.get(existing);
-      if (c && (c.league === 'SUP' || c.league === 'GSU' || c.league === 'BPL' || c.league === 'SPL')) return c.league;
-    }
-    if (data.league === 'Super League') {
-      // "Super League" in the dataset mixes Switzerland, Greece, China and India
-      const n = clubNorm(data.club);
-      if (INDIAN_CLUBS.has(n) || INDIAN_CLUBS.has(norm(data.club))) return 'IND1';
-    }
-    return mapped;
+  // --- mixed-league buckets: the export merges several real leagues under one name ---
+  if (data.league === 'Premier League') {
+    // English Premier League + Ukrainian Premier League (Shakhtar, Dynamo Kyiv)
+    const via = leagueViaExisting(G, data, idx);
+    return via === 'UPL' ? 'UPL' : 'EPL';
+  }
+  if (data.league === 'Serie A') {
+    // Italian Serie A (plus newly-promoted Serie B sides) + Ecuador's Serie A
+    const via = leagueViaExisting(G, data, idx);
+    if (via === 'SEA' || via === 'SEB' || via === 'BRA1') return via;
+    if (ECUADOR_CLUBS.has(norm(data.club))) return 'ECU1';
+    return 'SEA';
+  }
+  if (data.league === 'Super League') {
+    // Switzerland, Greece, China and India all under one label
+    const via = leagueViaExisting(G, data, idx);
+    if (via) return via;
+    const raw = norm(data.club);
+    if (INDIAN_CLUBS.has(raw) || INDIAN_CLUBS.has(clubNorm(data.club))) return 'IND1';
+    if (SWISS_CLUBS.has(raw)) return 'SUP';
+    return mapped; // CHN1
+  }
+  if (data.league === 'Pro League') {
+    // Belgian Pro League + Saudi Pro League (+ the odd Gulf club, which rides with the Saudi league)
+    const via = leagueViaExisting(G, data, idx);
+    if (via) return via;
+    if (BELGIAN_CLUBS.has(norm(data.club))) return 'BPL';
+    return mapped; // SPL
   }
   if (data.league === 'Bundesliga') {
-    const existing = resolveClubId(G, data.club, data.slug, idx);
-    if (existing) {
-      const c = G.world.clubs.get(existing);
-      if (c && c.league === 'AUB') return 'AUB';
-      if (c && c.league === 'BUN') return 'BUN';
-    }
+    const via = leagueViaExisting(G, data, idx);
+    if (via === 'AUB' || via === 'BUN') return via;
     // Austrian Bundesliga clubs share the "Bundesliga" name in the dataset
     const n = clubNorm(data.club);
     if (AUSTRIAN_CLUBS.has(n) || AUSTRIAN_CLUBS.has(norm(data.club))) return 'AUB';
@@ -160,16 +186,62 @@ function createClub(G, grp) {
   return club;
 }
 
-// full pipeline: ensure leagues → create clubs → apply bundle → tidy world
+// full pipeline: ensure leagues → create clubs → apply bundle → drop every non-database
+// senior player → restock uncovered clubs → tidy world
 export function prepareWorldWithBundle(G, bundle) {
   const t0 = Date.now();
   const ext = extendWorldFromBundle(G, bundle);
   const applied = applyImportBundle(G, bundle);
-  trimSquads(G, 30);
+  const purged = purgeNonImported(G);
+  const restocked = restockThinClubs(G);
+  trimSquads(G, 40);
   fixWageBudgets(G);
   rebuildNTSquads(G);
   const ms = Date.now() - t0;
-  return { applied, created: ext.clubsCreated, ms };
+  return { applied, created: ext.clubsCreated, purged, restocked, ms };
+}
+
+// The database is the single source of truth: after the bundle lands, every senior
+// player that did not come from the imported data is removed from the world
+// (youth-intake prospects are fictional regens and stay).
+export function purgeNonImported(G) {
+  let removed = 0;
+  for (const club of G.world.clubs.values()) {
+    club.squad = club.squad.filter(id => {
+      const p = G.world.players.get(id);
+      return p && (p.imported || p.yth);
+    });
+  }
+  for (const [id, p] of [...G.world.players]) {
+    if (!p.imported && !p.yth) { G.world.players.delete(id); removed++; }
+  }
+  G.world.freeAgents = G.world.freeAgents.filter(id => G.world.players.has(id));
+  return removed;
+}
+
+// Clubs the database doesn't cover (tiny leagues with partial exports — e.g. Czech,
+// Serbian or Cypriot sides) would end up with empty squads and break scheduling, so
+// they are restocked with clearly-fictional filler players.
+function restockThinClubs(G) {
+  const rng = new RNG(hashStr('restock26'));
+  let clubs = 0, made = 0;
+  for (const club of G.world.clubs.values()) {
+    let need = Math.max(0, 18 - club.squad.length);
+    if (!need) continue;
+    let idx = 0, guard = 0;
+    while (need > 0 && guard++ < 60) {
+      const p = genPlayerForClub(club, idx, rng, idx); // idx restart → GK coverage first
+      idx++;
+      p.imported = null; p.filler = true;
+      if (G.world.players.has(p.id)) continue;
+      p.created = true;
+      G.world.players.set(p.id, p);
+      club.squad.push(p.id);
+      need--; made++;
+    }
+    clubs++;
+  }
+  return { clubs, made };
 }
 
 function fixWageBudgets(G) {
@@ -220,9 +292,28 @@ export function rebuildNTSquads(G) {
     arr.push(p);
   }
   for (const arr of byNat.values()) arr.sort((a, b) => (b.ovr + b.gr) - (a.ovr + a.gr));
+  const rng = new RNG(hashStr('nttopup26'));
+  let idx = 0;
   for (const nt of world.nts) {
     const pool = byNat.get(nt.id) || [];
     nt.squad = pool.slice(0, 23).map(p => p.id);
-    nt.strength = pool.length ? pool.slice(0, 23).reduce((s, p) => s + p.ovr, 0) / Math.min(23, pool.length) : 60;
+    // nations with too few real (database) players get fictional natives so
+    // international fixtures always have a workable squad
+    let guard = 0;
+    while (nt.squad.length < 18 && guard++ < 40) {
+      idx++;
+      const p = genFreeAgent(hashStr('ntfill' + nt.id + idx) % 100000, rng);
+      p.id = 'f' + hashStr('ntfill' + nt.id + '#' + idx).toString(36);
+      p.nat = nt.id;
+      p.name = genName(nt.id, rng);
+      p.imported = null; p.filler = true; p.created = true;
+      if (world.players.has(p.id)) continue;
+      world.players.set(p.id, p);
+      world.freeAgents.push(p.id);
+      nt.squad.push(p.id);
+    }
+    nt.strength = nt.squad.length
+      ? nt.squad.reduce((s, id) => s + (world.players.get(id) ? world.players.get(id).ovr : 60), 0) / nt.squad.length
+      : 60;
   }
 }

@@ -443,12 +443,15 @@ function shortlistTab(G) {
     const p = G.world.players.get(pid);
     if (!p) continue;
     const c = p.clubId ? G.world.clubs.get(p.clubId) : null;
+    const slFace = playerFaceEl(p, 150, 96); slFace.style.width = '100%';
     grid.append(h('div', { class: 'pcard' },
-      h('div', { class: 'pcard-top' }, h('div', { class: 'pcard-ovr' }, String(Math.round(p.ovr + p.gr))), h('button', { class: 'btn btn-sm btn-danger', onclick: () => { G.user.shortlist = G.user.shortlist.filter(x => x !== pid); rerender(); } }, '✕')),
-      playerFaceEl(p, 84, 62),
+      h('div', { class: 'pcard-top' },
+        h('div', { class: 'pcard-ovr' }, h('div', { class: 'pcard-ovr-num' }, String(Math.round(p.ovr + p.gr))), h('div', { class: 'ovr-sub' }, p.pos)),
+        h('div', { class: 'pcard-badges' }, h('button', { class: 'btn btn-sm btn-danger', title: 'Remove from shortlist', onclick: () => { G.user.shortlist = G.user.shortlist.filter(x => x !== pid); rerender(); } }, '✕'))),
+      slFace,
       h('div', { class: 'pcard-name' }, esc(p.name)),
       h('div', { class: 'pcard-meta' }, h('span', null, c ? c.short : 'Free agent'), h('span', null, fmtMoney(playerValue(p, G.world) * 1e6))),
-      h('button', { class: 'btn btn-sm btn-primary', onclick: () => showPlayerModal(G, p.id) }, 'View'),
+      h('button', { class: 'btn btn-sm btn-primary btn-block', onclick: () => showPlayerModal(G, p.id) }, 'View'),
     ));
   }
   wrap.append(grid);
@@ -605,11 +608,14 @@ export function renderAcademy(G) {
   const grid = h('div', { class: 'grid', style: 'grid-template-columns:repeat(auto-fill,minmax(175px,1fr))' });
   for (const p of players) {
     const el = h('div', { class: 'pcard' });
+    const acFace = playerFaceEl(p, 150, 96); acFace.style.width = '100%';
     el.append(
-      h('div', { class: 'pcard-top' }, h('div', { class: 'pcard-ovr' }, String(Math.round(p.ovr + p.gr))), h('div', { class: 'pcard-pos' }, p.pos)),
-      playerFaceEl(p, 84, 62),
+      h('div', { class: 'pcard-top' },
+        h('div', { class: 'pcard-ovr' }, h('div', { class: 'pcard-ovr-num' }, String(Math.round(p.ovr + p.gr))), h('div', { class: 'ovr-sub' }, p.pos)),
+        h('div', { class: 'pcard-badges' })),
+      acFace,
       h('div', { class: 'pcard-name' }, esc(p.name)),
-      h('div', { class: 'pcard-meta' }, h('span', null, `${flag(p.nat)} ${p.age}yo`), h('span', { style: 'margin-left:auto', color: p.pot >= 85 ? 'var(--gold)' : '' }, `★ ${p.pot}`)),
+      h('div', { class: 'pcard-meta' }, h('span', null, `${flag(p.nat)} ${p.age}yo`), h('span', { class: 'pcard-pot', style: p.pot >= 85 ? 'color:var(--gold)' : '' }, `★ ${p.pot}`)),
       h('button', { class: 'btn btn-sm', disabled: p.age < 16, title: p.age < 16 ? 'Too young to promote' : '', onclick: () => {
         if (promoteYouth(G, p.id)) { club.youthPromo = (club.youthPromo || 0) + 1; toast(`${p.name} promoted to the first team!`, 'success'); rerender(); }
       } }, p.age < 16 ? 'Too young' : '⬆ Promote'),
@@ -931,8 +937,11 @@ export function renderIntl(G) {
         G.ntSquads[job] = s;
         rerender();
       });
-      el.append(h('div', { class: 'pcard-top' }, h('div', { class: 'pcard-ovr' }, String(Math.round(p.ovr + p.gr))), h('div', { class: 'pcard-pos' }, p.pos)),
-        playerFaceEl(p, 70, 54),
+      const ntFace = playerFaceEl(p, 130, 84); ntFace.style.width = '100%';
+      el.append(h('div', { class: 'pcard-top' },
+          h('div', { class: 'pcard-ovr' }, h('div', { class: 'pcard-ovr-num' }, String(Math.round(p.ovr + p.gr))), h('div', { class: 'ovr-sub' }, p.pos)),
+          h('div', { class: 'pcard-badges' })),
+        ntFace,
         h('div', { class: 'pcard-name' }, esc(p.name)),
         h('div', { class: 'pcard-meta' }, h('span', null, p.clubId ? G.world.clubs.get(p.clubId)?.short : 'FA')));
       grid.append(el);
@@ -1039,7 +1048,7 @@ export function renderSettings(G) {
   ));
   root.append(h('div', { class: 'card' },
     h('div', { class: 'card-title', style: 'margin-bottom:8px' }, 'About'),
-    h('p', { class: 'screen-sub', style: 'line-height:1.6' }, 'FCM 26 is a fan-made football management career game inspired by EA Sports FC manager career. Player & club names are factual; all ratings are original estimates, and all crests & portraits are original procedurally-generated artwork. Matches are simulated — you manage everything else.'),
+    h('p', { class: 'screen-sub', style: 'line-height:1.6' }, 'FCM 26 is a fan-made football management career game inspired by EA Sports FC manager career. Player & club names are factual; ratings derive from the public 2026 player database. Real club badges are shown where available; remaining crests and all player portraits are original generated artwork. Matches are simulated — you manage everything else.'),
   ));
   return root;
 }

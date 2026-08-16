@@ -38,17 +38,31 @@ export function crestSVG(club, size = 40) {
     <text x="12" y="${hsh % 2 === 0 ? 15.5 : 16}" text-anchor="middle" font-size="${fs}" font-weight="900" font-family="Segoe UI, sans-serif" fill="${c2}" stroke="${c1}" stroke-width=".5">${esc(mono)}</text>
   </svg>`;
 }
+const BADGE_EXTS = ['png', 'webp', 'jpg', 'jpeg'];
 export function crestEl(club, size = 22, cls = '') {
   const el = h('span', { class: `crest ${cls}` });
   el.style.width = size + 'px'; el.style.height = size + 'px';
-  el.style.background = club ? club.c1 || '#0d1120' : '#0d1120';
+  const gen = () => { badgeCache.set(club.id, 'gen'); el.innerHTML = crestSVG(club, size); };
   if (club && badgeCache.get(club.id) !== 'gen') {
+    let i = 0;
     const img = document.createElement('img');
-    img.src = 'assets/badges/' + club.id + '.png';
     img.alt = '';
     img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
-    img.addEventListener('error', () => { badgeCache.set(club.id, 'gen'); el.innerHTML = crestSVG(club, size); });
-    img.addEventListener('load', () => badgeCache.set(club.id, 'img'));
+    const next = () => {
+      if (i < BADGE_EXTS.length) {
+        const ext = BADGE_EXTS[i++];
+        img.src = 'assets/badges/' + club.id + '.' + ext;
+      } else gen();
+    };
+    img.addEventListener('error', next);
+    img.addEventListener('load', () => {
+      badgeCache.set(club.id, 'img');
+      // real crests ship on mixed backgrounds — seat them on a uniform light chip
+      el.classList.add('crest-img');
+      const pad = Math.max(1, Math.round(size * .09));
+      img.style.padding = pad + 'px';
+    });
+    next();
     el.append(img);
   } else if (club) {
     el.innerHTML = crestSVG(club, size);
@@ -146,34 +160,45 @@ export function hexEl(ovr, size = 46, cls = '') {
 export function ratingClass(v) { return v >= 85 ? 'rating-85' : v >= 78 ? 'rating-80' : v >= 70 ? 'rating-70' : ''; }
 
 // ---------- player card ----------
+const ratingTier = v => v >= 90 ? 't-x' : v >= 80 ? 't-a' : v >= 70 ? 't-b' : v >= 55 ? 't-c' : 't-d';
+const attrCell = (k, v) => h('div', { class: 'pb' },
+  h('b', { class: v >= 90 ? 'rating-90' : v >= 80 ? 'rating-80' : v >= 70 ? 'rating-70' : '' }, v),
+  h('span', null, k));
 export function playerCard(p, opts = {}) {
   const { club, compact, onClick } = opts;
   const moodIcon = p.mor >= 65 ? '🙂' : p.mor >= 45 ? '😐' : '😠';
   const moodCls = p.mor >= 65 ? 'mood-ok' : p.mor >= 45 ? 'mood-bad' : 'mood-angry';
-  const el = h('div', { class: `pcard${compact ? ' pcard-compact' : ''}` });
+  const ovr = Math.round(p.ovr + p.gr);
+  const shown = ovr >= 100 ? 99 : ovr;
+  const el = h('div', { class: `pcard ${ratingTier(shown)}${compact ? ' pcard-compact' : ''}` });
   if (onClick) el.addEventListener('click', onClick);
-  el.append(
+  const face = playerFaceEl(p, 160, 100);
+  face.style.width = '100%';
+  const attrs = p.pos === 'GK'
+    ? [['DIV', derivedAtts(p).div], ['HAN', derivedAtts(p).han], ['KIC', derivedAtts(p).kic], ['REF', derivedAtts(p).ref], ['SPD', derivedAtts(p).spd], ['POS', derivedAtts(p).gkpos]]
+    : [['PAC', p.pac], ['SHO', p.sho], ['PAS', p.pas], ['DRI', p.dri], ['DEF', p.def], ['PHY', p.phy]];
+  el.append(...[
     h('div', { class: 'pcard-top' },
-      h('div', { class: 'pcard-ovr', html: `${p.ovr + p.gr >= 100 ? 99 : Math.round(p.ovr + p.gr)}<span class="ovr-sub">${p.pos} ${Math.round(p.pot)}</span>` }),
+      h('div', { class: 'pcard-ovr' },
+        h('div', { class: 'pcard-ovr-num rating-cell ' + ratingClass(shown) }, String(shown)),
+        h('div', { class: 'ovr-sub' }, p.pos)),
       h('div', { class: 'pcard-badges' },
-        p.imported ? h('span', { class: 'tag', style: 'background:rgba(182,255,46,.16);color:var(--accent)', title: 'Real database data' }, 'DB') : null,
-        p.yth ? h('span', { class: 'tag', style: 'background:rgba(245,197,24,.15);color:#f5c518' }, 'ACA') : null,
-        p.inj ? h('span', { class: 'tag', style: 'background:rgba(255,77,94,.15);color:#ff4d5e' }, 'INJ') : null,
-        p.sus > 0 ? h('span', { class: 'tag', style: 'background:rgba(255,77,94,.15);color:#ff4d5e' }, 'SUS') : null,
+        p.imported ? h('span', { class: 'tag tag-db', title: 'Real database profile' }, 'DB') : null,
+        p.yth ? h('span', { class: 'tag tag-aca' }, 'ACA') : null,
+        p.inj ? h('span', { class: 'tag tag-bad' }, 'INJ') : null,
+        p.sus > 0 ? h('span', { class: 'tag tag-bad' }, 'SUS') : null,
         p.loan ? h('span', { class: 'tag' }, 'LOAN') : null,
       )),
-    playerFaceEl(p, 84, 62),
+    face,
     h('div', { class: 'pcard-name' }, esc(p.name)),
     h('div', { class: 'pcard-meta' },
+      h('span', { title: NAT_NAME[p.nat] || p.nat }, flag(p.nat)),
+      h('span', null, `${p.age} yrs`),
       h('span', { class: moodCls, title: 'Morale' }, moodIcon),
-      h('span', null, `${flag(p.nat)} ${NAT_NAME[p.nat] || p.nat}`),
-      h('span', null, `${p.age}yo`),
-      club ? h('span', { style: 'margin-left:auto' }, fmtMoney(p.ctr.w * 52 * 1000) + '/yr') : null,
-    ),
-    compact ? null : h('div', { class: 'pcard-bars' },
-      ...[['PAC', p.pac], ['SHO', p.sho], ['PAS', p.pas], ['DRI', p.dri], ['DEF', p.def], ['PHY', p.phy]].map(([k, v]) =>
-        h('div', { class: 'pb' }, h('span', null, k), h('b', null, v)))),
-  );
+      h('span', { class: 'pcard-pot', title: `Potential ${p.pot}` }, `★ ${p.pot}`)),
+    compact ? null : h('div', { class: 'pcard-bars' }, ...attrs.map(([k, v]) => attrCell(k, v))),
+    club ? h('div', { class: 'pcard-wage' }, fmtMoney(p.ctr.w * 52 * 1000) + '/yr') : null,
+  ].filter(Boolean));
   return el;
 }
 

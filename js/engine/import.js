@@ -32,6 +32,19 @@ const COL_KEYS = {
   div: 'div', gkdiving: 'div', gk_diving: 'div', diving: 'div', han: 'han', gkhandling: 'han', gk_handling: 'han', handling: 'han',
   kic: 'kic', gkkicking: 'kic', gk_kicking: 'kic', kicking: 'kic', ref: 'ref', gkreflexes: 'ref', gk_reflexes: 'ref', reflexes: 'ref',
   spd: 'spd', gkspeed: 'spd', gk_speed: 'spd', gkpos: 'gkpos', gkpositioning: 'gkpos', gk_positioning: 'gkpos',
+  // SoFIFA full-DB column families (norm() drops underscores, so these are the compact forms)
+  physic: 'phy', nationalityname: 'nat',
+  attackingcrossing: 'cro', attackingfinishing: 'fin', attackingheadingaccuracy: 'hei',
+  attackingshortpassing: 'spa', attackingvolleys: 'vol',
+  skillcurve: 'cur', skillfkaccuracy: 'fka', skilllongpassing: 'lpa', skillballcontrol: 'bac', skilldribbling: 'drb',
+  movementacceleration: 'acc', movementsprintspeed: 'spe', movementagility: 'agi',
+  movementreactions: 'rea', movementbalance: 'bal',
+  powershotpower: 'spow', powerjumping: 'jum', powerstamina: 'sta', powerstrength: 'str', powerlongshots: 'lon',
+  mentalityaggression: 'agg', mentalityinterceptions: 'int', mentalitypositioning: 'posAttr',
+  mentalityvision: 'vis', mentalitypenalties: 'pen', mentalitycomposure: 'com',
+  defendingmarkingawareness: 'mar', defendingstandingtackle: 'tac', defendingslidingtackle: 'slt',
+  goalkeepingdiving: 'div', goalkeepinghandling: 'han', goalkeepingkicking: 'kic',
+  goalkeepingpositioning: 'gkpos', goalkeepingreflexes: 'ref', goalkeepingspeed: 'spd',
   // SoFIFA/Kaggle-style extras
   overallrating: 'ovr', defawareness: 'awa', def_awareness: 'awa', dribbling2: 'bac',
   longname: 'name', fullname: 'name', knownas: 'name', playerpositions: 'positions', positions: 'positions',
@@ -89,6 +102,23 @@ export function convertGenericObject(obj) {
   return convertGenericRow(Object.keys(obj), Object.values(obj).map(v => (v == null ? '' : String(v))));
 }
 
+// Turn "J. Bellingham" + "Jude Victor William Bellingham" into "Jude Bellingham".
+// Only contiguous leading initials are expanded, matched positionally against the long
+// name so known-as names ("Pedri", "Rafa", "Anderson Talisca") pass through untouched.
+function expandShortName(short, long) {
+  if (!short) return long || '';
+  if (!long || short === long) return short;
+  const sp = short.split(/\s+/), lp = long.split(/\s+/);
+  const out = [];
+  let i = 0;
+  while (i < sp.length && /^[A-ZÀ-Þ]\.?$/.test(sp[i]) && sp[i].length <= 2) {
+    const letter = norm(sp[i]);
+    out.push(i < lp.length && norm(lp[i])[0] === letter ? lp[i] : sp[i]);
+    i++;
+  }
+  return out.concat(sp.slice(i)).join(' ');
+}
+
 function rowToData(row) {
   if (!row.name) return null;
   // women filter: explicit gender or women's league names
@@ -129,13 +159,15 @@ function rowToData(row) {
   }
   const alt = rawAlt.split(/[+|,;]/).map(s => SOPOS[s.trim().toUpperCase()] || s.trim().toUpperCase())
     .filter(s => VALID_POS.has(s) && s !== pos);
+  const dispName = expandShortName(row.shortname ? String(row.shortname) : '', String(row.name));
   const data = {
-    name: String(row.name), club: row.club || '', pos, slug: '',
+    name: dispName, club: row.club || '', pos, slug: '',
     alt: [...new Set(alt)],
     age: num(row.age), nat: row.nat || '',
     ovr: num(row.ovr), pot: num(row.pot),
     det,
   };
+  if (String(row.name) !== dispName) data.fullname = String(row.name);
   let faceN = 0;
   for (const k of ['pac', 'sho', 'pas', 'dri', 'def', 'phy']) {
     const n = num(row[k]);
@@ -144,6 +176,11 @@ function rowToData(row) {
   if (faceN > 0 && faceN < 6) {
     const comp = faceStatsFromDet(det, pos);
     for (const k of ['pac', 'sho', 'pas', 'dri', 'def', 'phy']) if (data[k] == null) data[k] = comp[k];
+  }
+  // goalkeepers: derive the six face stats from the GK substats (the CSV's outfield
+  // pace/shooting/… columns are meaningless for keepers)
+  if (pos === 'GK' && ['div', 'han', 'kic', 'ref', 'spd', 'gkpos'].every(k => det[k] != null)) {
+    Object.assign(data, faceStatsFromDet(det, 'GK'));
   }
   if (row.shortname) data.shortname = String(row.shortname);
   if (row.foot) data.foot = String(row.foot);
@@ -335,6 +372,22 @@ export const CLUB_ALIASES = {
   'redbullsalzburg': 'RB Salzburg', 'fcredbullsalzburg': 'RB Salzburg',
   'lask': 'LASK Linz', 'bscyoungboys': 'Young Boys',
   'rapid': 'Rapid Wien',
+  // SoFIFA full legal club names → in-game base club names
+  'slbenfica': 'Benfica', 'sportingclubedebraga': 'SC Braga', 'scbraga': 'SC Braga',
+  'realbetisbalompie': 'Real Betis', 'realbetis': 'Real Betis',
+  'rccelta': 'Celta de Vigo', 'rcceltadevigo': 'Celta de Vigo', 'celtadevigo': 'Celta de Vigo',
+  'olympiquelyonnais': 'Olympique Lyon', 'olympiquedemarseille': 'Olympique Marseille',
+  'rcstrasbourgalsace': 'RC Strasbourg',
+  'medipolbasaksehir': 'Başakşehir', 'medipolbasaksehirfk': 'Başakşehir', 'istanbulbasaksehir': 'Başakşehir',
+  'aarhusgymnastikforening': 'AGF Aarhus', 'agfaarhus': 'AGF Aarhus',
+  'sonderjyskefodbold': 'SønderjyskE', 'sonderjyske': 'SønderjyskE',
+  'realsportingdegijon': 'Sporting Gijón', 'realsporting': 'Sporting Gijón',
+  'rcdeportivodelacoruna': 'Deportivo La Coruña', 'deportivolacoruna': 'Deportivo La Coruña', 'deportivo': 'Deportivo La Coruña',
+  'alahlisfc': 'Al-Ahli',
+  'grasshopperclubzurich': 'Grasshopper Club', 'grasshoppers': 'Grasshopper Club',
+  'sønderjyskefodbold': 'SønderjyskE',
+  'estreladaamadora': 'Estrela Amadora',
+  'avsfutebolsad': 'AVS Futebol',
 };
 const NAME_ALIASES = {
   'vinijr': 'Vinícius Júnior', 'vinijr.': 'Vinícius Júnior', 'viniciusjr': 'Vinícius Júnior', 'viniciusjunior': 'Vinícius Júnior',
@@ -362,26 +415,25 @@ const NAME_ALIASES = {
 const CLUB_SUFFIXES = ['gymnastikforening', 'boldklub', 'athletic', 'association', 'wanderers', 'united', 'city', 'town', 'county', 'albion', 'rovers', 'rangers', 'athleticfc', 'afc', 'cfc', 'ffc', 'krc', 'rsc', 'rcd', 'rc', 'sv', 'cf', 'fc', 'sc', 'sk', 'jk', 'ac', 'as', 'ad', 'cd', 'ca', 'cs', 'sd', 'ss', 'ud', 'fk', 'ks', 'kv', 'dc', 'sf', 'hc', 'bc', 'bk', 'if', 'ifk', '1fc', 'vfl', 'tsg', 'tsv', 'spvgg', 'ssv', 'dfc', 'rbc', 'hsv', 'nkc', 'cfc'].sort((a, b) => b.length - a.length);
 const CLUB_PREFIXES = ['fc', 'cf', 'afc', 'ac', 'as', '1fc', 'spvgg', 'tsv', 'tsg', 'sv', 'vfl', 'krc', 'rsc', 'rcd', 'ss', 'ad', 'ud', 'cd', 'cs', 'sd', 'fk', 'nk', 'dc', 'sc', 'sk', 'rb', 'ks', 'kv', 'ffc', 'hsv', 'ifk', 'if', 'bk', 'bc', 'hc', 'rbc', 'dfc', 'nkc', 'fsv', 'bsc', 'sg', 'ts', 'efc'].sort((a, b) => b.length - a.length);
 export function clubNorm(name) {
-  let s = norm(name);
-  // strip leading digits & affixes
+  // word-wise affix stripping: normalization fuses words together, so raw endsWith()
+  // corrupts names ("…Verona FC" would strip "AFC" out of "veronafc" → "hellasveron")
+  const words = String(name ?? '').toLowerCase().normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ') // combining-diacritics range (̀-ͯ)
+    .trim().split(/\s+/).filter(Boolean);
   let changed = true;
-  while (changed && s.length > 4) {
+  while (changed && words.length > 1 && words.join('').length > 4) {
     changed = false;
-    if (/^\d/.test(s)) { s = s.replace(/^\d+/, ''); changed = true; continue; }
-    for (const p of CLUB_PREFIXES) {
-      if (s.startsWith(p) && s.length - p.length >= 4) { s = s.slice(p.length); changed = true; break; }
-    }
+    if (/^\d+$/.test(words[0])) { words.shift(); changed = true; continue; }
+    if (CLUB_PREFIXES.includes(words[0])) { words.shift(); changed = true; continue; }
   }
-  // strip trailing digits & affixes
   changed = true;
-  while (changed && s.length > 4) {
+  while (changed && words.length > 1 && words.join('').length > 4) {
     changed = false;
-    if (/\d$/.test(s)) { s = s.replace(/\d+$/, ''); changed = true; continue; }
-    for (const suf of CLUB_SUFFIXES) {
-      if (s.endsWith(suf) && s.length - suf.length >= 4) { s = s.slice(0, -suf.length); changed = true; break; }
-    }
+    const last = words[words.length - 1];
+    if (/^\d+$/.test(last)) { words.pop(); changed = true; continue; }
+    if (CLUB_SUFFIXES.includes(last)) { words.pop(); changed = true; continue; }
   }
-  return s;
+  return words.join('');
 }
 
 export function buildClubIndex(G) {
@@ -457,19 +509,29 @@ export function applyImportedPlayer(G, data, ctx) {
   const clubId = resolveClubId(G, data.club, data.slug, ctx && ctx.clubIdx);
   const allowFA = !!(data.fa || (ctx && ctx.allowFA));
   let isNew = false;
-  let p = (ctx && ctx.nameIndex) ? findPlayerIdx(G, data, clubId, ctx) : findPlayer(G, data.name, data.pos, data.club);
+  let p = null;
+  if (ctx && ctx.forceCreate) {
+    // bundle apply: the database pid is the identity — never fuzzy-merge into a
+    // same-named worldgen player (that produced the Pedri/Fermín-style clashes)
+    p = data.pid != null ? (G.world.players.get('p' + data.pid) || null) : null;
+  } else {
+    p = (ctx && ctx.nameIndex) ? findPlayerIdx(G, data, clubId, ctx) : findPlayer(G, data.name, data.pos, data.club);
+  }
   if (!p) {
     if (!clubId && !allowFA) return 'no club in world';
     const rng = new RNG(hashStr('ea' + norm(data.name) + data.pos));
     const base = data.ovr || 60;
-    const dispName = data.shortname || data.name;
+    const dispName = data.shortname && !data.pid ? data.shortname : data.name;
     p = makePlayer({
-      id: 'i' + hashStr(norm(data.name) + data.pos).toString(36), name: dispName, pos: data.pos,
+      // pid-keyed id: unique even for same-name/same-pos players at different clubs
+      id: data.pid != null ? 'p' + data.pid : 'i' + hashStr(norm(data.name) + '|' + data.pos + '|' + (data.club || '')).toString(36),
+      name: dispName, pos: data.pos,
       age: data.age || 23, nat: natISO, ovr: base, pot: data.pot || base + 2,
       pac: base, sho: base, pas: base, dri: base, def: base, phy: base,
       clubId, created: true, rng, skipRole: true,
     });
-    if (data.shortname && data.shortname !== dispName) p.profile.fullname = data.name;
+    if (data.fullname && data.fullname !== dispName) p.profile.fullname = data.fullname;
+    else if (data.shortname && data.shortname !== dispName) p.profile.fullname = data.name;
     G.world.players.set(p.id, p);
     if (clubId) G.world.clubs.get(clubId).squad.push(p.id);
     else G.world.freeAgents.push(p.id);
@@ -522,6 +584,7 @@ export function applyImportedPlayer(G, data, ctx) {
     shirt: data.shirt || 0, photoUrl: data.photoUrl || '', photoId: data.photoId || 0,
     realface: !!data.realface,
   });
+  if (data.fullname) p.profile.fullname = data.fullname;
   // contract: real wage & release clause & end date
   if (data.wage != null) p.ctr.w = Math.round(data.wage / 1000 * 100) / 100; // € → €k/week
   if (data.release != null) p.ctr.r = Math.round(data.release / 1e6 * 100) / 100;
@@ -582,48 +645,58 @@ function findPlayerIdx(G, data, clubId, ctx) {
   return null;
 }
 
-// batch apply (fast, indexed) — used for the baked-in bundle
+// batch apply (fast) — used for the baked-in database bundle.
+// Rows with a database pid are applied by identity (never fuzzy-merged into existing
+// players); fuzzy name indexes are only built when some rows lack pids.
 export function applyImportBundle(G, list) {
   const clubIdx = buildClubIndex(G);
-  const nameIndex = new Map();
-  const looseIndex = new Map();
-  const f2Index = new Map();
-  const lastIndex = new Map();
-  for (const p of G.world.players.values()) {
-    const k = norm(p.name);
-    let arr = nameIndex.get(k);
-    if (!arr) nameIndex.set(k, arr = []);
-    arr.push(p);
-    const lk = looseNorm(p.name);
-    if (lk !== k) {
-      let a0 = looseIndex.get(lk);
-      if (!a0) looseIndex.set(lk, a0 = []);
-      a0.push(p);
-    }
-    const parts = String(p.name).split(/\s+/).map(t => norm(t)).filter(Boolean);
-    if (parts.length >= 2) {
-      const f2 = parts[0] + parts[1];
-      let a2 = f2Index.get(f2);
-      if (!a2) f2Index.set(f2, a2 = []);
-      a2.push(p);
-    }
-    const last = parts[parts.length - 1];
-    if (last && last.length >= 4) {
-      let a3 = lastIndex.get(last);
-      if (!a3) lastIndex.set(last, a3 = []);
-      a3.push(p);
-      const lLast = looseNorm(last);
-      if (lLast !== last) {
-        let a4 = lastIndex.get(lLast);
-        if (!a4) lastIndex.set(lLast, a4 = []);
-        a4.push(p);
+  const needsIdx = list.some(d => d.pid == null);
+  let idxCtx = {};
+  if (needsIdx) {
+    const nameIndex = new Map();
+    const looseIndex = new Map();
+    const f2Index = new Map();
+    const lastIndex = new Map();
+    for (const p of G.world.players.values()) {
+      const k = norm(p.name);
+      let arr = nameIndex.get(k);
+      if (!arr) nameIndex.set(k, arr = []);
+      arr.push(p);
+      const lk = looseNorm(p.name);
+      if (lk !== k) {
+        let a0 = looseIndex.get(lk);
+        if (!a0) looseIndex.set(lk, a0 = []);
+        a0.push(p);
+      }
+      const parts = String(p.name).split(/\s+/).map(t => norm(t)).filter(Boolean);
+      if (parts.length >= 2) {
+        const f2 = parts[0] + parts[1];
+        let a2 = f2Index.get(f2);
+        if (!a2) f2Index.set(f2, a2 = []);
+        a2.push(p);
+      }
+      const last = parts[parts.length - 1];
+      if (last && last.length >= 4) {
+        let a3 = lastIndex.get(last);
+        if (!a3) lastIndex.set(last, a3 = []);
+        a3.push(p);
+        const lLast = looseNorm(last);
+        if (lLast !== last) {
+          let a4 = lastIndex.get(lLast);
+          if (!a4) lastIndex.set(lLast, a4 = []);
+          a4.push(p);
+        }
       }
     }
+    idxCtx = { nameIndex, looseIndex, f2Index, lastIndex };
   }
   let applied = 0;
   for (const data of list) {
     data.bundle = true;
-    const r = applyImportedPlayer(G, data, { clubIdx, nameIndex, looseIndex, f2Index, lastIndex });
+    const ctx = data.pid != null
+      ? { clubIdx, allowFA: true, forceCreate: true }
+      : { clubIdx, allowFA: true, ...idxCtx };
+    const r = applyImportedPlayer(G, data, ctx);
     if (r === 'updated' || r === 'created') applied++;
   }
   return applied;
@@ -632,11 +705,21 @@ export function applyImportBundle(G, list) {
 // nation name → ISO
 const NAT_BY_NAME = {};
 for (const [iso, n] of Object.entries(NAT_NAME)) NAT_BY_NAME[norm(n)] = iso;
+// official SoFIFA/EAFC country names that don't match the in-game short names
+const NAT_ALIAS = {
+  cotedivoire: 'CIV', korearepublic: 'KOR', chinapr: 'CHN', republicofireland: 'IRL',
+  northernireland: 'NIR', bosniaandherzegovina: 'BIH', congodr: 'COD', caboverde: 'CPV',
+  unitedarabemirates: 'UAE', trinidadandtobago: 'TRI', hongkong: 'HKG', faroeislands: 'FRO',
+  chinesetaipei: 'TPE', saintkittsandnevis: 'SKN', antiguaandbarbuda: 'ATG', saintlucia: 'LCA',
+  centralafricanrepublic: 'CTA', equatorialguinea: 'EQG', guineabissau: 'GNB', northmacedonia: 'MKD',
+  sierraleone: 'SLE', newcaledonia: 'NCL', puertorico: 'PUR', turkiye: 'TUR', czechia: 'CZE',
+};
 export function nationISO(G, name) {
   if (!name) return null;
   if (name.length <= 3 && name === name.toUpperCase()) return name;
   const n = norm(name);
   if (NAT_BY_NAME[n]) return NAT_BY_NAME[n];
+  if (NAT_ALIAS[n]) return NAT_ALIAS[n];
   for (const nt of G.world.nts) if (norm(nt.name) === n) return nt.id;
   return null;
 }

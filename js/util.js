@@ -169,6 +169,15 @@ export const NAT_NAME = {
   BHR: 'Bahrain', KUW: 'Kuwait', SYR: 'Syria', LBN: 'Lebanon', KAZ: 'Kazakhstan', KGZ: 'Kyrgyzstan', TJK: 'Tajikistan',
   HON: 'Honduras', SLV: 'El Salvador', GUA: 'Guatemala', TRI: 'Trinidad & Tobago', HAI: 'Haiti', CUW: 'Curaçao',
   NCA: 'Nicaragua', DOM: 'Dominican Republic', BLZ: 'Belize', SUR: 'Suriname',
+  // extended set (full SoFIFA/EAFC database coverage)
+  BOL: 'Bolivia', KOS: 'Kosovo', MNE: 'Montenegro', NZL: 'New Zealand', GNB: 'Guinea-Bissau', BUL: 'Bulgaria',
+  MKD: 'North Macedonia', SLE: 'Sierra Leone', ZIM: 'Zimbabwe', CGO: 'Congo', COM: 'Comoros', EQG: 'Equatorial Guinea',
+  LBR: 'Liberia', MAD: 'Madagascar', CTA: 'Central African Republic', MOZ: 'Mozambique', PHI: 'Philippines', PLE: 'Palestine',
+  ATG: 'Antigua and Barbuda', SKN: 'Saint Kitts and Nevis', FRO: 'Faroe Islands', TPE: 'Chinese Taipei', BDI: 'Burundi',
+  LBY: 'Libya', TAN: 'Tanzania', LCA: 'Saint Lucia', BLR: 'Belarus', MSR: 'Montserrat', BER: 'Bermuda', RWA: 'Rwanda',
+  MWI: 'Malawi', CUB: 'Cuba', YEM: 'Yemen', BAN: 'Bangladesh', CHA: 'Chad', VAN: 'Vanuatu', NIG: 'Niger', NAM: 'Namibia',
+  AFG: 'Afghanistan', SRI: 'Sri Lanka', SOM: 'Somalia', PAK: 'Pakistan', NCL: 'New Caledonia', BAR: 'Barbados',
+  LIE: 'Liechtenstein', PUR: 'Puerto Rico', GIB: 'Gibraltar', AND: 'Andorra', GRN: 'Grenada', GUY: 'Guyana', HKG: 'Hong Kong',
 };
 export function flag(nat) {
   if (!nat) return '';

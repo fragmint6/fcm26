@@ -1,5 +1,5 @@
 FCM 26 — IMPORT BUILD REPORT
-Built: 2026-08-16T08:21:34.224Z · Files: 1 · Rows: 18405 · Unique players: 18405 · Duplicates dropped: 0 · Skipped rows: 0
+Built: 2026-08-16T10:00:36.484Z · Files: 1 · Rows: 18405 · Unique players: 18405 · Duplicates dropped: 0 · Skipped rows: 0
 League mapped: 18405/18405  (players whose league exists or is created in the game)
 
 Players with unmapped leagues (ignored):

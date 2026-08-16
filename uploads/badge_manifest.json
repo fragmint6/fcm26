@@ -1,0 +1,3481 @@
+[
+ {
+  "id": "MCI",
+  "name": "Manchester City",
+  "league": "EPL",
+  "rep": 92,
+  "dyn": false
+ },
+ {
+  "id": "LIV",
+  "name": "Liverpool",
+  "league": "EPL",
+  "rep": 89,
+  "dyn": false
+ },
+ {
+  "id": "ARS",
+  "name": "Arsenal",
+  "league": "EPL",
+  "rep": 88,
+  "dyn": false
+ },
+ {
+  "id": "CHE",
+  "name": "Chelsea",
+  "league": "EPL",
+  "rep": 87,
+  "dyn": false
+ },
+ {
+  "id": "MUN",
+  "name": "Manchester United",
+  "league": "EPL",
+  "rep": 85,
+  "dyn": false
+ },
+ {
+  "id": "NEW",
+  "name": "Newcastle United",
+  "league": "EPL",
+  "rep": 85,
+  "dyn": false
+ },
+ {
+  "id": "TOT",
+  "name": "Tottenham Hotspur",
+  "league": "EPL",
+  "rep": 85,
+  "dyn": false
+ },
+ {
+  "id": "AVL",
+  "name": "Aston Villa",
+  "league": "EPL",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "BHA",
+  "name": "Brighton & Hove Albion",
+  "league": "EPL",
+  "rep": 82,
+  "dyn": false
+ },
+ {
+  "id": "WHU",
+  "name": "West Ham United",
+  "league": "EPL",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "CRY",
+  "name": "Crystal Palace",
+  "league": "EPL",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "NFO",
+  "name": "Nottingham Forest",
+  "league": "EPL",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "EVE",
+  "name": "Everton",
+  "league": "EPL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "FUL",
+  "name": "Fulham",
+  "league": "EPL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "BRE",
+  "name": "Brentford",
+  "league": "EPL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "BOU",
+  "name": "AFC Bournemouth",
+  "league": "EPL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "WOL",
+  "name": "Wolverhampton Wanderers",
+  "league": "EPL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "LEE",
+  "name": "Leeds United",
+  "league": "EPL",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "BUR",
+  "name": "Burnley",
+  "league": "EPL",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "SUN",
+  "name": "Sunderland",
+  "league": "EPL",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "RMA",
+  "name": "Real Madrid",
+  "league": "LAL",
+  "rep": 92,
+  "dyn": false
+ },
+ {
+  "id": "BAR",
+  "name": "FC Barcelona",
+  "league": "LAL",
+  "rep": 91,
+  "dyn": false
+ },
+ {
+  "id": "ATM",
+  "name": "Atlético de Madrid",
+  "league": "LAL",
+  "rep": 89,
+  "dyn": false
+ },
+ {
+  "id": "ATH",
+  "name": "Athletic Club",
+  "league": "LAL",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "RSO",
+  "name": "Real Sociedad",
+  "league": "LAL",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "VIL",
+  "name": "Villarreal CF",
+  "league": "LAL",
+  "rep": 82,
+  "dyn": false
+ },
+ {
+  "id": "GIR",
+  "name": "Girona FC",
+  "league": "LAL",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "BET",
+  "name": "Real Betis",
+  "league": "LAL",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "VAL",
+  "name": "Valencia CF",
+  "league": "LAL",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "SEV",
+  "name": "Sevilla FC",
+  "league": "LAL",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "CEL",
+  "name": "Celta de Vigo",
+  "league": "LAL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "OSA",
+  "name": "CA Osasuna",
+  "league": "LAL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "MLL",
+  "name": "RCD Mallorca",
+  "league": "LAL",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "GET",
+  "name": "Getafe CF",
+  "league": "LAL",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "ESP",
+  "name": "RCD Espanyol",
+  "league": "LAL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "RAY",
+  "name": "Rayo Vallecano",
+  "league": "LAL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "ALA",
+  "name": "Deportivo Alavés",
+  "league": "LAL",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "LEG",
+  "name": "CD Leganés",
+  "league": "LAL",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "VLL",
+  "name": "Real Valladolid",
+  "league": "LAL",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "LPA",
+  "name": "UD Las Palmas",
+  "league": "LAL",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "INT",
+  "name": "Inter Milan",
+  "league": "SEA",
+  "rep": 90,
+  "dyn": false
+ },
+ {
+  "id": "ACM",
+  "name": "AC Milan",
+  "league": "SEA",
+  "rep": 88,
+  "dyn": false
+ },
+ {
+  "id": "NAP",
+  "name": "Napoli",
+  "league": "SEA",
+  "rep": 87,
+  "dyn": false
+ },
+ {
+  "id": "JUV",
+  "name": "Juventus",
+  "league": "SEA",
+  "rep": 87,
+  "dyn": false
+ },
+ {
+  "id": "ATA",
+  "name": "Atalanta",
+  "league": "SEA",
+  "rep": 86,
+  "dyn": false
+ },
+ {
+  "id": "ROM",
+  "name": "AS Roma",
+  "league": "SEA",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "LAZ",
+  "name": "Lazio",
+  "league": "SEA",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "FIO",
+  "name": "Fiorentina",
+  "league": "SEA",
+  "rep": 82,
+  "dyn": false
+ },
+ {
+  "id": "BOL",
+  "name": "Bologna",
+  "league": "SEA",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "TOR",
+  "name": "Torino",
+  "league": "SEA",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "UDI",
+  "name": "Udinese",
+  "league": "SEA",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "GEN",
+  "name": "Genoa",
+  "league": "SEA",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "COM",
+  "name": "Como 1907",
+  "league": "SEA",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "CAG",
+  "name": "Cagliari",
+  "league": "SEA",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "PAR",
+  "name": "Parma",
+  "league": "SEA",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "MON",
+  "name": "Monza",
+  "league": "SEA",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "VER",
+  "name": "Hellas Verona",
+  "league": "SEA",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "EMP",
+  "name": "Empoli",
+  "league": "SEA",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "LEC",
+  "name": "Lecce",
+  "league": "SEA",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "VEN",
+  "name": "Venezia",
+  "league": "SEA",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "BAY",
+  "name": "Bayern Munich",
+  "league": "BUN",
+  "rep": 91,
+  "dyn": false
+ },
+ {
+  "id": "B04",
+  "name": "Bayer Leverkusen",
+  "league": "BUN",
+  "rep": 88,
+  "dyn": false
+ },
+ {
+  "id": "DOR",
+  "name": "Borussia Dortmund",
+  "league": "BUN",
+  "rep": 87,
+  "dyn": false
+ },
+ {
+  "id": "RBL",
+  "name": "RB Leipzig",
+  "league": "BUN",
+  "rep": 86,
+  "dyn": false
+ },
+ {
+  "id": "STU",
+  "name": "VfB Stuttgart",
+  "league": "BUN",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "SGE",
+  "name": "Eintracht Frankfurt",
+  "league": "BUN",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "WOB",
+  "name": "VfL Wolfsburg",
+  "league": "BUN",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "SCF",
+  "name": "SC Freiburg",
+  "league": "BUN",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "BMG",
+  "name": "Borussia Mönchengladbach",
+  "league": "BUN",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "HOF",
+  "name": "TSG Hoffenheim",
+  "league": "BUN",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "M05",
+  "name": "Mainz 05",
+  "league": "BUN",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "SVW",
+  "name": "Werder Bremen",
+  "league": "BUN",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "FCU",
+  "name": "Union Berlin",
+  "league": "BUN",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "FCA",
+  "name": "FC Augsburg",
+  "league": "BUN",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "KOL",
+  "name": "FC Köln",
+  "league": "BUN",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "HSV",
+  "name": "Hamburger SV",
+  "league": "BUN",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "STP",
+  "name": "FC St. Pauli",
+  "league": "BUN",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "HDH",
+  "name": "FC Heidenheim",
+  "league": "BUN",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "PSG",
+  "name": "Paris Saint-Germain",
+  "league": "LI1",
+  "rep": 91,
+  "dyn": false
+ },
+ {
+  "id": "ASM",
+  "name": "AS Monaco",
+  "league": "LI1",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "OM",
+  "name": "Olympique Marseille",
+  "league": "LI1",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "LIL",
+  "name": "Lille OSC",
+  "league": "LI1",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "OL",
+  "name": "Olympique Lyon",
+  "league": "LI1",
+  "rep": 82,
+  "dyn": false
+ },
+ {
+  "id": "NIC",
+  "name": "OGC Nice",
+  "league": "LI1",
+  "rep": 82,
+  "dyn": false
+ },
+ {
+  "id": "RCL",
+  "name": "RC Lens",
+  "league": "LI1",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "REN",
+  "name": "Stade Rennais",
+  "league": "LI1",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "STR",
+  "name": "RC Strasbourg",
+  "league": "LI1",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "REI",
+  "name": "Stade de Reims",
+  "league": "LI1",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "BRE3",
+  "name": "Stade Brestois",
+  "league": "LI1",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "NAN",
+  "name": "FC Nantes",
+  "league": "LI1",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "TFC",
+  "name": "Toulouse FC",
+  "league": "LI1",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "STE",
+  "name": "AS Saint-Étienne",
+  "league": "LI1",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "MTP",
+  "name": "Montpellier HSC",
+  "league": "LI1",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "AJA",
+  "name": "AJ Auxerre",
+  "league": "LI1",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "HAC",
+  "name": "Le Havre AC",
+  "league": "LI1",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "ANG",
+  "name": "Angers SCO",
+  "league": "LI1",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "LEI",
+  "name": "Leicester City",
+  "league": "CHP",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "c15y2s5p",
+  "name": "Birmingham City",
+  "league": "CHP",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "SOU",
+  "name": "Southampton",
+  "league": "CHP",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "SHU",
+  "name": "Sheffield United",
+  "league": "CHP",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "NOR",
+  "name": "Norwich City",
+  "league": "CHP",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "WBA",
+  "name": "West Bromwich Albion",
+  "league": "CHP",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "MID",
+  "name": "Middlesbrough",
+  "league": "CHP",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "IPS",
+  "name": "Ipswich Town",
+  "league": "CHP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "WAT",
+  "name": "Watford",
+  "league": "CHP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "COV",
+  "name": "Coventry City",
+  "league": "CHP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "BCI",
+  "name": "Bristol City",
+  "league": "CHP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "BLB",
+  "name": "Blackburn Rovers",
+  "league": "CHP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "SWA",
+  "name": "Swansea City",
+  "league": "CHP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "STK",
+  "name": "Stoke City",
+  "league": "CHP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "cjlflfp",
+  "name": "Charlton Athletic",
+  "league": "CHP",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c1c2a63u",
+  "name": "Wrexham",
+  "league": "CHP",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "MIL",
+  "name": "Millwall",
+  "league": "CHP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "PNE",
+  "name": "Preston North End",
+  "league": "CHP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "QPR",
+  "name": "Queens Park Rangers",
+  "league": "CHP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "LUT",
+  "name": "Luton Town",
+  "league": "CHP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "HUL",
+  "name": "Hull City",
+  "league": "CHP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "CAR",
+  "name": "Cardiff City",
+  "league": "CHP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "DER",
+  "name": "Derby County",
+  "league": "CHP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "SHW",
+  "name": "Sheffield Wednesday",
+  "league": "CHP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "POR",
+  "name": "Portsmouth",
+  "league": "CHP",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "OXF",
+  "name": "Oxford United",
+  "league": "CHP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "PLY",
+  "name": "Plymouth Argyle",
+  "league": "CHP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "ZAR",
+  "name": "Real Zaragoza",
+  "league": "LA2",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "OVI",
+  "name": "Real Oviedo",
+  "league": "LA2",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "SPG",
+  "name": "Sporting Gijón",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "RAC",
+  "name": "Racing Santander",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "ELC",
+  "name": "Elche CF",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "LEV",
+  "name": "Levante UD",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "ALM",
+  "name": "UD Almería",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "GRA",
+  "name": "Granada CF",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c1dtn2ml",
+  "name": "Córdoba CF",
+  "league": "LA2",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "MAG",
+  "name": "Málaga CF",
+  "league": "LA2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "DEP",
+  "name": "Deportivo La Coruña",
+  "league": "LA2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "cdrn8q8",
+  "name": "AD Ceuta FC",
+  "league": "LA2",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "TEN",
+  "name": "CD Tenerife",
+  "league": "LA2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "CAD",
+  "name": "Cádiz CF",
+  "league": "LA2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "EIB",
+  "name": "SD Eibar",
+  "league": "LA2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "cxcgp8z",
+  "name": "Cultural Leonesa",
+  "league": "LA2",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1xzxikw",
+  "name": "FC Andorra",
+  "league": "LA2",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "BUR2",
+  "name": "Burgos CF",
+  "league": "LA2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "HUE",
+  "name": "SD Huesca",
+  "league": "LA2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "MIR",
+  "name": "CD Mirandés",
+  "league": "LA2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "CAR2",
+  "name": "FC Cartagena",
+  "league": "LA2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "ALB",
+  "name": "Albacete Balompié",
+  "league": "LA2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "ELD",
+  "name": "CD Eldense",
+  "league": "LA2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "FER",
+  "name": "Racing Ferrol",
+  "league": "LA2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "ALC",
+  "name": "AD Alcorcón",
+  "league": "LA2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "czq5wkp",
+  "name": "Real Sociedad de Fútbol B",
+  "league": "LA2",
+  "rep": 65,
+  "dyn": true
+ },
+ {
+  "id": "CAS",
+  "name": "CD Castellón",
+  "league": "LA2",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "SAS",
+  "name": "Sassuolo",
+  "league": "SEB",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "SAM",
+  "name": "Sampdoria",
+  "league": "SEB",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "CRE",
+  "name": "Cremonese",
+  "league": "SEB",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "PAL",
+  "name": "Palermo",
+  "league": "SEB",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "SAL",
+  "name": "Salernitana",
+  "league": "SEB",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "FRO",
+  "name": "Frosinone",
+  "league": "SEB",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "cng2chv",
+  "name": "SSC Bari",
+  "league": "SEB",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "BRE2",
+  "name": "Brescia",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "PIS",
+  "name": "Pisa",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "BAR2",
+  "name": "Bari",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "c1qoaop7",
+  "name": "Padova",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1u9q0yi",
+  "name": "Avellino",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c13tbupa",
+  "name": "Virtus Entella",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "csf22ip",
+  "name": "Pescara",
+  "league": "SEB",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "SPE",
+  "name": "Spezia",
+  "league": "SEB",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "CAT",
+  "name": "Catanzaro",
+  "league": "SEB",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "REG",
+  "name": "Reggiana",
+  "league": "SEB",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "MOD",
+  "name": "Modena",
+  "league": "SEB",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "CIT",
+  "name": "Cittadella",
+  "league": "SEB",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "SUD",
+  "name": "Südtirol",
+  "league": "SEB",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "COS",
+  "name": "Cosenza",
+  "league": "SEB",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "MAN",
+  "name": "Mantova",
+  "league": "SEB",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "CES",
+  "name": "Cesena",
+  "league": "SEB",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "CAR3",
+  "name": "Carrarese",
+  "league": "SEB",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "JUS",
+  "name": "Juve Stabia",
+  "league": "SEB",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "S04",
+  "name": "Schalke 04",
+  "league": "BU2",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "BSC",
+  "name": "Hertha BSC",
+  "league": "BU2",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "FOR",
+  "name": "Fortuna Düsseldorf",
+  "league": "BU2",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "FCN",
+  "name": "FC Nürnberg",
+  "league": "BU2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "H96",
+  "name": "Hannover 96",
+  "league": "BU2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c1lojd2r",
+  "name": "VfL Bochum 1848",
+  "league": "BU2",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "SCP",
+  "name": "SC Paderborn",
+  "league": "BU2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "KSC",
+  "name": "Karlsruher SC",
+  "league": "BU2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "FCK",
+  "name": "FC Kaiserslautern",
+  "league": "BU2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "c45o38x",
+  "name": "Holstein Kiel",
+  "league": "BU2",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "SGF",
+  "name": "Greuther Fürth",
+  "league": "BU2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "SVD",
+  "name": "Darmstadt 98",
+  "league": "BU2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "cb16br1",
+  "name": "DSC Arminia Bielefeld",
+  "league": "BU2",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "SVE",
+  "name": "SV Elversberg",
+  "league": "BU2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "FCM",
+  "name": "FC Magdeburg",
+  "league": "BU2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "EBS",
+  "name": "Eintracht Braunschweig",
+  "league": "BU2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "ULM",
+  "name": "SSV Ulm",
+  "league": "BU2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "SCM",
+  "name": "Preußen Münster",
+  "league": "BU2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "DSC",
+  "name": "Arminia Bielefeld",
+  "league": "BU2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "SGD",
+  "name": "Dynamo Dresden",
+  "league": "BU2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "JAH",
+  "name": "Jahn Regensburg",
+  "league": "BU2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "MET",
+  "name": "FC Metz",
+  "league": "LI2",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "LOR",
+  "name": "FC Lorient",
+  "league": "LI2",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "PFC",
+  "name": "Paris FC",
+  "league": "LI2",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "BAS",
+  "name": "SC Bastia",
+  "league": "LI2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "CAE",
+  "name": "SM Caen",
+  "league": "LI2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "GUI",
+  "name": "EA Guingamp",
+  "league": "LI2",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "TRO",
+  "name": "ESTAC Troyes",
+  "league": "LI2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "AMI",
+  "name": "Amiens SC",
+  "league": "LI2",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c1uawhwj",
+  "name": "En Avant Guingamp",
+  "league": "LI2",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c18af8wq",
+  "name": "Sporting Club Bastia",
+  "league": "LI2",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "cfr3nx8",
+  "name": "Stade Lavallois Mayenne FC",
+  "league": "LI2",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "CLE",
+  "name": "Clermont Foot",
+  "league": "LI2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "LAV",
+  "name": "Stade Lavallois",
+  "league": "LI2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "GRE2",
+  "name": "Grenoble Foot 38",
+  "league": "LI2",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "c1kc31kr",
+  "name": "AS Nancy Lorraine",
+  "league": "LI2",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "c1slb1bp",
+  "name": "Le Mans FC",
+  "league": "LI2",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "PAU",
+  "name": "Pau FC",
+  "league": "LI2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "ACA",
+  "name": "AC Ajaccio",
+  "league": "LI2",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "c1f0ccyp",
+  "name": "FC Annecy",
+  "league": "LI2",
+  "rep": 65,
+  "dyn": true
+ },
+ {
+  "id": "c14zi5bf",
+  "name": "Rodez Aveyron Football",
+  "league": "LI2",
+  "rep": 65,
+  "dyn": true
+ },
+ {
+  "id": "RAF",
+  "name": "Rodez AF",
+  "league": "LI2",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "DUN",
+  "name": "USL Dunkerque",
+  "league": "LI2",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "VAFC",
+  "name": "Valenciennes FC",
+  "league": "LI2",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "RSFC",
+  "name": "Red Star FC",
+  "league": "LI2",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "c1idhdrt",
+  "name": "US Boulogne Cote d'Opale",
+  "league": "LI2",
+  "rep": 63,
+  "dyn": true
+ },
+ {
+  "id": "MTG",
+  "name": "FC Martigues",
+  "league": "LI2",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "AJA2",
+  "name": "Ajax",
+  "league": "ERE",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "PSV",
+  "name": "PSV Eindhoven",
+  "league": "ERE",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "FEY",
+  "name": "Feyenoord",
+  "league": "ERE",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "AZ",
+  "name": "AZ Alkmaar",
+  "league": "ERE",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "TWE",
+  "name": "FC Twente",
+  "league": "ERE",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "UTR",
+  "name": "FC Utrecht",
+  "league": "ERE",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "HEE",
+  "name": "SC Heerenveen",
+  "league": "ERE",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "GRO",
+  "name": "FC Groningen",
+  "league": "ERE",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "VIT",
+  "name": "Vitesse",
+  "league": "ERE",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c16oo0vt",
+  "name": "NEC Nijmegen",
+  "league": "ERE",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "SPA",
+  "name": "Sparta Rotterdam",
+  "league": "ERE",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "GAE",
+  "name": "Go Ahead Eagles",
+  "league": "ERE",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "WIL",
+  "name": "Willem II",
+  "league": "ERE",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "PEC",
+  "name": "PEC Zwolle",
+  "league": "ERE",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "NAC",
+  "name": "NAC Breda",
+  "league": "ERE",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c1mivac2",
+  "name": "Excelsior",
+  "league": "ERE",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "HER",
+  "name": "Heracles Almelo",
+  "league": "ERE",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "FOR2",
+  "name": "Fortuna Sittard",
+  "league": "ERE",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "c1bonln5",
+  "name": "Telstar",
+  "league": "ERE",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "cynmoq7",
+  "name": "FC Volendam",
+  "league": "ERE",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "RKC",
+  "name": "RKC Waalwijk",
+  "league": "ERE",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "ALM2",
+  "name": "Almere City",
+  "league": "ERE",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "SPO",
+  "name": "Sporting CP",
+  "league": "LIP",
+  "rep": 86,
+  "dyn": false
+ },
+ {
+  "id": "BEN",
+  "name": "Benfica",
+  "league": "LIP",
+  "rep": 85,
+  "dyn": false
+ },
+ {
+  "id": "POR2",
+  "name": "FC Porto",
+  "league": "LIP",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "BRA2",
+  "name": "SC Braga",
+  "league": "LIP",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "VSC",
+  "name": "Vitória SC",
+  "league": "LIP",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "FAM",
+  "name": "FC Famalicão",
+  "league": "LIP",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "EST",
+  "name": "GD Estoril Praia",
+  "league": "LIP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "ARO",
+  "name": "FC Arouca",
+  "league": "LIP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c1js4xk1",
+  "name": "AVS Futebol SAD",
+  "league": "LIP",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "GVI",
+  "name": "Gil Vicente",
+  "league": "LIP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "RAV",
+  "name": "Rio Ave",
+  "league": "LIP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "MOR2",
+  "name": "Moreirense",
+  "league": "LIP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "BOA",
+  "name": "Boavista",
+  "league": "LIP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "cm2xnvc",
+  "name": "CD Tondela",
+  "league": "LIP",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "CPI",
+  "name": "Casa Pia",
+  "league": "LIP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "cw5wtmm",
+  "name": "Alverca",
+  "league": "LIP",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1s9vk0a",
+  "name": "Estrela da Amadora",
+  "league": "LIP",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "SCL",
+  "name": "Santa Clara",
+  "league": "LIP",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "EAM",
+  "name": "Estrela Amadora",
+  "league": "LIP",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "NAC2",
+  "name": "CD Nacional",
+  "league": "LIP",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "AVS",
+  "name": "AVS Futebol",
+  "league": "LIP",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "FAR",
+  "name": "SC Farense",
+  "league": "LIP",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "GAL",
+  "name": "Galatasaray",
+  "league": "SUL",
+  "rep": 84,
+  "dyn": false
+ },
+ {
+  "id": "FEN",
+  "name": "Fenerbahçe",
+  "league": "SUL",
+  "rep": 83,
+  "dyn": false
+ },
+ {
+  "id": "BES",
+  "name": "Beşiktaş",
+  "league": "SUL",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "TRA",
+  "name": "Trabzonspor",
+  "league": "SUL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "IBF",
+  "name": "Başakşehir",
+  "league": "SUL",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "ADS",
+  "name": "Adana Demirspor",
+  "league": "SUL",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "KON",
+  "name": "Konyaspor",
+  "league": "SUL",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "ANT",
+  "name": "Antalyaspor",
+  "league": "SUL",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "SIV",
+  "name": "Sivasspor",
+  "league": "SUL",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c228fzc",
+  "name": "Kocaelispor",
+  "league": "SUL",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "GAZ",
+  "name": "Gaziantep FK",
+  "league": "SUL",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "KAS",
+  "name": "Kasımpaşa",
+  "league": "SUL",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "ALA2",
+  "name": "Alanyaspor",
+  "league": "SUL",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "cuyugaa",
+  "name": "Gençlerbirliği SK",
+  "league": "SUL",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "RIZ",
+  "name": "Çaykur Rizespor",
+  "league": "SUL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "KAY",
+  "name": "Kayserispor",
+  "league": "SUL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "SAM2",
+  "name": "Samsunspor",
+  "league": "SUL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "EYP",
+  "name": "Eyüpspor",
+  "league": "SUL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "GOZ",
+  "name": "Göztepe",
+  "league": "SUL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "HAT",
+  "name": "Hatayspor",
+  "league": "SUL",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c6tawrw",
+  "name": "Fatih Karagümrük",
+  "league": "SUL",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "BOD",
+  "name": "Bodrumspor",
+  "league": "SUL",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "HIL",
+  "name": "Al-Hilal",
+  "league": "SPL",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "ITT",
+  "name": "Al-Ittihad",
+  "league": "SPL",
+  "rep": 80,
+  "dyn": false
+ },
+ {
+  "id": "NAS",
+  "name": "Al-Nassr",
+  "league": "SPL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "AHL",
+  "name": "Al-Ahli",
+  "league": "SPL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "QAD",
+  "name": "Al-Qadsiah",
+  "league": "SPL",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "SHB",
+  "name": "Al-Shabab",
+  "league": "SPL",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "ETT",
+  "name": "Al-Ettifaq",
+  "league": "SPL",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "c1jzq4gz",
+  "name": "Al Ahli SFC",
+  "league": "SPL",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "TWN",
+  "name": "Al-Taawoun",
+  "league": "SPL",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "c1z01aan",
+  "name": "NEOM SC",
+  "league": "SPL",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "FAT",
+  "name": "Al-Fateh",
+  "league": "SPL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "RAE",
+  "name": "Al-Raed",
+  "league": "SPL",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "DAM",
+  "name": "Damac",
+  "league": "SPL",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c1sq96vf",
+  "name": "Al Ain",
+  "league": "SPL",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "KHA",
+  "name": "Al-Khaleej",
+  "league": "SPL",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "WEH",
+  "name": "Al-Wehda",
+  "league": "SPL",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "FAY",
+  "name": "Al-Fayha",
+  "league": "SPL",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "OKH",
+  "name": "Al-Okhdood",
+  "league": "SPL",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "RIY",
+  "name": "Al-Riyadh",
+  "league": "SPL",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "cx4lww1",
+  "name": "Al Akhdoud Saudi Club",
+  "league": "SPL",
+  "rep": 64,
+  "dyn": true
+ },
+ {
+  "id": "cdwmany",
+  "name": "Al-Najma SC",
+  "league": "SPL",
+  "rep": 63,
+  "dyn": true
+ },
+ {
+  "id": "ORO",
+  "name": "Al-Orobah",
+  "league": "SPL",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "KHO",
+  "name": "Al-Kholood",
+  "league": "SPL",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "c1odl7w9",
+  "name": "Al Hazem FC",
+  "league": "SPL",
+  "rep": 62,
+  "dyn": true
+ },
+ {
+  "id": "CLB",
+  "name": "Club Brugge",
+  "league": "BPL",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "AND",
+  "name": "Anderlecht",
+  "league": "BPL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "GNK",
+  "name": "KRC Genk",
+  "league": "BPL",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "USG",
+  "name": "Union SG",
+  "league": "BPL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "ANT2",
+  "name": "Royal Antwerp",
+  "league": "BPL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "KAA",
+  "name": "KAA Gent",
+  "league": "BPL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "STA",
+  "name": "Standard Liège",
+  "league": "BPL",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "CHA",
+  "name": "Charleroi",
+  "league": "BPL",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "caebtf0",
+  "name": "Union Saint-Gilloise",
+  "league": "BPL",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "KVM",
+  "name": "KV Mechelen",
+  "league": "BPL",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "CER",
+  "name": "Cercle Brugge",
+  "league": "BPL",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "c4df4p9",
+  "name": "Oud-Heverlee Leuven",
+  "league": "BPL",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c1gjtrbo",
+  "name": "Standard de Liège",
+  "league": "BPL",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c9dzuz0",
+  "name": "Royal Charleroi Sporting Club",
+  "league": "BPL",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cona8xb",
+  "name": "KVC Westerlo",
+  "league": "BPL",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c19l2f7g",
+  "name": "Cercle Brugge KSV",
+  "league": "BPL",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "OHL",
+  "name": "OH Leuven",
+  "league": "BPL",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "WES",
+  "name": "Westerlo",
+  "league": "BPL",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c867ik9",
+  "name": "Sint-Truidense VV",
+  "league": "BPL",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c1ae4kpo",
+  "name": "FCV Dender EH",
+  "league": "BPL",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "cn4q4vq",
+  "name": "RAAL La Louvière",
+  "league": "BPL",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "STV",
+  "name": "Sint-Truiden",
+  "league": "BPL",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "ccjj57l",
+  "name": "SV Zulte Waregem",
+  "league": "BPL",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "KVK",
+  "name": "KV Kortrijk",
+  "league": "BPL",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "BEE",
+  "name": "Beerschot",
+  "league": "BPL",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "DEN2",
+  "name": "FCV Dender",
+  "league": "BPL",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "SHK",
+  "name": "Shakhtar Donetsk",
+  "league": "UPL",
+  "rep": 78,
+  "dyn": false
+ },
+ {
+  "id": "DYK",
+  "name": "Dynamo Kyiv",
+  "league": "UPL",
+  "rep": 76,
+  "dyn": false
+ },
+ {
+  "id": "DN1",
+  "name": "Dnipro-1",
+  "league": "UPL",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "ZOR",
+  "name": "Zorya Luhansk",
+  "league": "UPL",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "POL2",
+  "name": "FC Polissya",
+  "league": "UPL",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "KRY",
+  "name": "Kryvbas",
+  "league": "UPL",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "VOR",
+  "name": "Vorskla Poltava",
+  "league": "UPL",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "OLE",
+  "name": "FC Oleksandriya",
+  "league": "UPL",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "RUK",
+  "name": "Rukh Lviv",
+  "league": "UPL",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "KOL2",
+  "name": "Kolos Kovalivka",
+  "league": "UPL",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "CHO",
+  "name": "Chornomorets",
+  "league": "UPL",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "KAR2",
+  "name": "Karpaty Lviv",
+  "league": "UPL",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "VER2",
+  "name": "Veres Rivne",
+  "league": "UPL",
+  "rep": 61,
+  "dyn": false
+ },
+ {
+  "id": "LNZ",
+  "name": "LNZ Cherkasy",
+  "league": "UPL",
+  "rep": 61,
+  "dyn": false
+ },
+ {
+  "id": "OBO",
+  "name": "Obolon Kyiv",
+  "league": "UPL",
+  "rep": 60,
+  "dyn": false
+ },
+ {
+  "id": "INH",
+  "name": "Inhulets",
+  "league": "UPL",
+  "rep": 59,
+  "dyn": false
+ },
+ {
+  "id": "RBS",
+  "name": "RB Salzburg",
+  "league": "AUB",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "STU2",
+  "name": "Sturm Graz",
+  "league": "AUB",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "RAP",
+  "name": "Rapid Wien",
+  "league": "AUB",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "LAS",
+  "name": "LASK Linz",
+  "league": "AUB",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "AUS",
+  "name": "Austria Wien",
+  "league": "AUB",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "WAC",
+  "name": "Wolfsberger AC",
+  "league": "AUB",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "TSV",
+  "name": "TSV Hartberg",
+  "league": "AUB",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "ALT",
+  "name": "Rheindorf Altach",
+  "league": "AUB",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "AKA",
+  "name": "Austria Klagenfurt",
+  "league": "AUB",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "c77ecdp",
+  "name": "SV Ried",
+  "league": "AUB",
+  "rep": 65,
+  "dyn": true
+ },
+ {
+  "id": "WSG",
+  "name": "WSG Tirol",
+  "league": "AUB",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "BWK",
+  "name": "Blau-Weiß Linz",
+  "league": "AUB",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "GAK",
+  "name": "Grazer AK",
+  "league": "AUB",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "YBB",
+  "name": "Young Boys",
+  "league": "SUP",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "FCB2",
+  "name": "FC Basel",
+  "league": "SUP",
+  "rep": 73,
+  "dyn": false
+ },
+ {
+  "id": "FCZ",
+  "name": "FC Zürich",
+  "league": "SUP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "LUG",
+  "name": "FC Lugano",
+  "league": "SUP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "SER",
+  "name": "Servette",
+  "league": "SUP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "STG",
+  "name": "FC St. Gallen",
+  "league": "SUP",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "LUZ",
+  "name": "FC Luzern",
+  "league": "SUP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "GCZ",
+  "name": "Grasshopper Club",
+  "league": "SUP",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "LS2",
+  "name": "Lausanne-Sport",
+  "league": "SUP",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "c1cr932w",
+  "name": "FC Thun",
+  "league": "SUP",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "SIO",
+  "name": "FC Sion",
+  "league": "SUP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "WINT",
+  "name": "FC Winterthur",
+  "league": "SUP",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "c1f64zwv",
+  "name": "Grasshopper Club Zürich",
+  "league": "SUP",
+  "rep": 64,
+  "dyn": true
+ },
+ {
+  "id": "YVE",
+  "name": "Yverdon-Sport",
+  "league": "SUP",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "OLY",
+  "name": "Olympiacos",
+  "league": "GSU",
+  "rep": 77,
+  "dyn": false
+ },
+ {
+  "id": "PAO",
+  "name": "Panathinaikos",
+  "league": "GSU",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "AEK",
+  "name": "AEK Athens",
+  "league": "GSU",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "PAOK",
+  "name": "PAOK",
+  "league": "GSU",
+  "rep": 75,
+  "dyn": false
+ },
+ {
+  "id": "ARIS",
+  "name": "Aris Thessaloniki",
+  "league": "GSU",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "OFI",
+  "name": "OFI Crete",
+  "league": "GSU",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "ATR",
+  "name": "Atromitos",
+  "league": "GSU",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "AST",
+  "name": "Asteras Tripolis",
+  "league": "GSU",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "VOL",
+  "name": "Volos NFC",
+  "league": "GSU",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "PAN",
+  "name": "Panetolikos",
+  "league": "GSU",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "LAM",
+  "name": "PAS Lamia",
+  "league": "GSU",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "PSR",
+  "name": "Panserraikos",
+  "league": "GSU",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "LEV2",
+  "name": "Levadiakos",
+  "league": "GSU",
+  "rep": 61,
+  "dyn": false
+ },
+ {
+  "id": "KAL",
+  "name": "Kallithea",
+  "league": "GSU",
+  "rep": 61,
+  "dyn": false
+ },
+ {
+  "id": "CEL2",
+  "name": "Celtic",
+  "league": "SCP",
+  "rep": 81,
+  "dyn": false
+ },
+ {
+  "id": "RAN",
+  "name": "Rangers",
+  "league": "SCP",
+  "rep": 79,
+  "dyn": false
+ },
+ {
+  "id": "ABE",
+  "name": "Aberdeen",
+  "league": "SCP",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "HEA",
+  "name": "Heart of Midlothian",
+  "league": "SCP",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "HIB",
+  "name": "Hibernian",
+  "league": "SCP",
+  "rep": 70,
+  "dyn": false
+ },
+ {
+  "id": "MOT",
+  "name": "Motherwell",
+  "league": "SCP",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "STM",
+  "name": "St Mirren",
+  "league": "SCP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "KIL",
+  "name": "Kilmarnock",
+  "league": "SCP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "DUN2",
+  "name": "Dundee United",
+  "league": "SCP",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "DUN3",
+  "name": "Dundee FC",
+  "league": "SCP",
+  "rep": 64,
+  "dyn": false
+ },
+ {
+  "id": "c18agpz0",
+  "name": "Livingston FC",
+  "league": "SCP",
+  "rep": 64,
+  "dyn": true
+ },
+ {
+  "id": "ROS",
+  "name": "Ross County",
+  "league": "SCP",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "STJ",
+  "name": "St Johnstone",
+  "league": "SCP",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "c2169kk",
+  "name": "Falkirk",
+  "league": "SCP",
+  "rep": 62,
+  "dyn": true
+ },
+ {
+  "id": "KBH",
+  "name": "FC København",
+  "league": "DSU",
+  "rep": 74,
+  "dyn": false
+ },
+ {
+  "id": "FCM2",
+  "name": "FC Midtjylland",
+  "league": "DSU",
+  "rep": 72,
+  "dyn": false
+ },
+ {
+  "id": "BRO",
+  "name": "Brøndby IF",
+  "league": "DSU",
+  "rep": 71,
+  "dyn": false
+ },
+ {
+  "id": "FCN2",
+  "name": "FC Nordsjælland",
+  "league": "DSU",
+  "rep": 69,
+  "dyn": false
+ },
+ {
+  "id": "AGF",
+  "name": "AGF Aarhus",
+  "league": "DSU",
+  "rep": 68,
+  "dyn": false
+ },
+ {
+  "id": "SIF",
+  "name": "Silkeborg IF",
+  "league": "DSU",
+  "rep": 67,
+  "dyn": false
+ },
+ {
+  "id": "c1km7303",
+  "name": "Odense Boldklub",
+  "league": "DSU",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "RFC",
+  "name": "Randers FC",
+  "league": "DSU",
+  "rep": 66,
+  "dyn": false
+ },
+ {
+  "id": "c1cfdwbc",
+  "name": "Sønderjyske Fodbold",
+  "league": "DSU",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "VFF",
+  "name": "Viborg FF",
+  "league": "DSU",
+  "rep": 65,
+  "dyn": false
+ },
+ {
+  "id": "c67hcr0",
+  "name": "Fredericia",
+  "league": "DSU",
+  "rep": 64,
+  "dyn": true
+ },
+ {
+  "id": "LBK",
+  "name": "Lyngby BK",
+  "league": "DSU",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "AAB",
+  "name": "AaB Aalborg",
+  "league": "DSU",
+  "rep": 63,
+  "dyn": false
+ },
+ {
+  "id": "VBK",
+  "name": "Vejle BK",
+  "league": "DSU",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "SE2",
+  "name": "SønderjyskE",
+  "league": "DSU",
+  "rep": 62,
+  "dyn": false
+ },
+ {
+  "id": "c1d50avx",
+  "name": "Inter Miami",
+  "league": "MLS1",
+  "rep": 72,
+  "dyn": true
+ },
+ {
+  "id": "c1tnw4gs",
+  "name": "Los Angeles FC",
+  "league": "MLS1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c13ccy2u",
+  "name": "Portland Timbers",
+  "league": "MLS1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c7yt4zo",
+  "name": "Minnesota United FC",
+  "league": "MLS1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c9wztuq",
+  "name": "Vancouver Whitecaps FC",
+  "league": "MLS1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c11urnn3",
+  "name": "LA Galaxy",
+  "league": "MLS1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "cgkkudn",
+  "name": "Columbus Crew",
+  "league": "MLS1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c14wld2z",
+  "name": "Charlotte FC",
+  "league": "MLS1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c14yeyxo",
+  "name": "New England Revolution",
+  "league": "MLS1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c7yl1bd",
+  "name": "FC Cincinnati",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cqnla2a",
+  "name": "Seattle Sounders FC",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c1kne28s",
+  "name": "Houston Dynamo",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c1sy36bw",
+  "name": "Atlanta United",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cr7s4o9",
+  "name": "San Jose Earthquakes",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cceork1",
+  "name": "Austin FC",
+  "league": "MLS1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c1o54fhw",
+  "name": "Nashville SC",
+  "league": "MLS1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "cxqpi1b",
+  "name": "Real Salt Lake",
+  "league": "MLS1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1vdo4r4",
+  "name": "Colorado Rapids",
+  "league": "MLS1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "cinseuq",
+  "name": "Philadelphia Union",
+  "league": "MLS1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1ce4eh6",
+  "name": "Sporting Kansas City",
+  "league": "MLS1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c1r9eoco",
+  "name": "St. Louis CITY SC",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c1u8jk7m",
+  "name": "New York Red Bulls",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c186isth",
+  "name": "New York City FC",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c1l1zj04",
+  "name": "Chicago Fire",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c1oqakbi",
+  "name": "Toronto FC",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "cnqux39",
+  "name": "San Diego FC",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c9o895w",
+  "name": "Orlando City SC",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "chc24ku",
+  "name": "DC United",
+  "league": "MLS1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "c13j6bib",
+  "name": "CF Montréal",
+  "league": "MLS1",
+  "rep": 66,
+  "dyn": true
+ },
+ {
+  "id": "c4zp7zo",
+  "name": "FC Dallas",
+  "league": "MLS1",
+  "rep": 65,
+  "dyn": true
+ },
+ {
+  "id": "c4nv1ci",
+  "name": "River Plate",
+  "league": "ARG1",
+  "rep": 76,
+  "dyn": true
+ },
+ {
+  "id": "c1dtgawn",
+  "name": "Boca Juniors",
+  "league": "ARG1",
+  "rep": 75,
+  "dyn": true
+ },
+ {
+  "id": "c1bmxg7f",
+  "name": "Estudiantes de La Plata",
+  "league": "ARG1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "c1bemoze",
+  "name": "Racing Club",
+  "league": "ARG1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "c1l7b6yx",
+  "name": "Vélez Sarsfield",
+  "league": "ARG1",
+  "rep": 73,
+  "dyn": true
+ },
+ {
+  "id": "c17te0f4",
+  "name": "Independiente",
+  "league": "ARG1",
+  "rep": 72,
+  "dyn": true
+ },
+ {
+  "id": "c1jend1k",
+  "name": "Talleres",
+  "league": "ARG1",
+  "rep": 72,
+  "dyn": true
+ },
+ {
+  "id": "cs9osrs",
+  "name": "Rosario Central",
+  "league": "ARG1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c1meday3",
+  "name": "Belgrano de Córdoba",
+  "league": "ARG1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c4ahfw",
+  "name": "Godoy Cruz",
+  "league": "ARG1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c1ijox3k",
+  "name": "Huracán",
+  "league": "ARG1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "cbsyar5",
+  "name": "Tigre",
+  "league": "ARG1",
+  "rep": 71,
+  "dyn": true
+ },
+ {
+  "id": "c1x0hvuk",
+  "name": "Newell's Old Boys",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "czhd6r7",
+  "name": "Lanús",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c1qijrcv",
+  "name": "Defensa y Justicia",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "cs9h6un",
+  "name": "Gimnasia y Esgrima La Plata",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c1peye0y",
+  "name": "Argentinos Juniors",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c1o4ki2u",
+  "name": "Club Atlético Unión",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "cu7gh25",
+  "name": "Independiente Rivadavia",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "c1p7ikw3",
+  "name": "CA Banfield",
+  "league": "ARG1",
+  "rep": 70,
+  "dyn": true
+ },
+ {
+  "id": "cgeeo0e",
+  "name": "Platense",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cl5ymg1",
+  "name": "Instituto Atlético Central Córdoba",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c10vlg67",
+  "name": "Club Atlético Sarmiento",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "cyl3y8w",
+  "name": "Atlético Tucumán",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "ct43rvh",
+  "name": "CA Aldosivi",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "ceo6m0f",
+  "name": "Central Cordoba SdE",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c16gyiru",
+  "name": "Barracas Central",
+  "league": "ARG1",
+  "rep": 69,
+  "dyn": true
+ },
+ {
+  "id": "c1eaovbg",
+  "name": "Club Atlético San Martín",
+  "league": "ARG1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "c13nwh1j",
+  "name": "San Lorenzo de Almagro",
+  "league": "ARG1",
+  "rep": 68,
+  "dyn": true
+ },
+ {
+  "id": "cj52g4e",
+  "name": "Deportivo Riestra",
+  "league": "ARG1",
+  "rep": 67,
+  "dyn": true
+ },
+ {
+  "id": "cwooklp",
+  "name": "Flamengo",
+  "league": "BRA1",
+  "rep": 79,
+  "dyn": true
+ },
+ {
+  "id": "cy4klkg",
+  "name": "Palmeiras",
+  "league": "BRA1",
+  "rep": 78,
+  "dyn": true
+ },
+ {
+  "id": "c1e5xhek",
+  "name": "Atlético Mineiro",
+  "league": "BRA1",
+  "rep": 78,
+  "dyn": true
+ },
+ {
+  "id": "c16wcqxt",
+  "name": "Botafogo",
+  "league": "BRA1",
+  "rep": 77,
+  "dyn": true
+ },
+ {
+  "id": "csmauaf",
+  "name": "Internacional",
+  "league": "BRA1",
+  "rep": 77,
+  "dyn": true
+ },
+ {
+  "id": "c67rst2",
+  "name": "Corinthians",
+  "league": "BRA1",
+  "rep": 76,
+  "dyn": true
+ },
+ {
+  "id": "c46fd78",
+  "name": "São Paulo",
+  "league": "BRA1",
+  "rep": 76,
+  "dyn": true
+ },
+ {
+  "id": "c1ywmcqs",
+  "name": "Fluminense",
+  "league": "BRA1",
+  "rep": 75,
+  "dyn": true
+ },
+ {
+  "id": "c193oevj",
+  "name": "Grêmio",
+  "league": "BRA1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "c14rid01",
+  "name": "Bahia",
+  "league": "BRA1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "c1wa2pbb",
+  "name": "Cruzeiro",
+  "league": "BRA1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "ckzg2vi",
+  "name": "Fortaleza",
+  "league": "BRA1",
+  "rep": 74,
+  "dyn": true
+ },
+ {
+  "id": "czd9o7d",
+  "name": "Vasco da Gama",
+  "league": "BRA1",
+  "rep": 72,
+  "dyn": true
+ }
+]
